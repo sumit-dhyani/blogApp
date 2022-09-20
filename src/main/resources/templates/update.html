@@ -1,0 +1,24 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<title>Blog Application</title>
+<link th:href="@{/css/update.css}" rel="stylesheet" />
+<style type="text/css">
+.flex{
+display:flex;
+}
+</style>
+</head>
+<body>
+<nav><h1>Blog App</h1></nav>
+<form th:object="${blog}">
+	<input th:value="*{title}" />
+
+		<input th:value="*{author}" /> 
+
+		
+	<input class="content" th:value="*{content}" />
+	<input value="submit" type="submit" />
+
+</form>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<title>Blog Application</title>
+<style type="text/css">
+.flex{
+display:flex;
+}
+</style>
+</head>
+<body>
+<a th:href="@{/update(id=${id})}" th:text="update" />
+<form th:object="${blog}">
+	<h1 th:text="*{title}"></h1>
+	<div class="flex">
+		<p th:text="*{author}"> 
+		
+		<p th:text="*{createdAt}">
+		</div>
+		
+	<h2 th:text="*{content}"></h2>
+
+</form>
+
+<form th:action="@{/addcomment}" th:object="${comment}" method="POST">
+	Enter Name: <input type="text" th:field="*{name}" />
+	Enter Email: <input type="email" th:field="*{email}" />
+	Enter Comment: <input type="text" th:field="*{comment}" />
+	<input type="submit" value="Add comment" />
+</form>
+</body>
+</html>

@@ -1,0 +1,37 @@
+*{
+	margin:0;
+	padding:0;
+}
+
+body{
+	width:100vw;
+	height:100vh;
+}
+nav{
+	width:90%;
+	display:flex;
+	margin:0 auto;
+	background:grey;
+	color:white;
+	padding:1.5em;
+}
+
+form{
+	margin-top:5em;
+	width:75%;
+	display:flex;
+	flex-direction:column;
+	gap:1em;
+	height:50%;
+	margin: auto auto;
+	padding:4em;
+}
+input{
+	font-size:1.5em;
+	width:50%;
+	
+}
+.content{
+	height:5em;
+	word-wrap:wrap;
+}

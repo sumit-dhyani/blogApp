@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<link th:href="@{/css/post.css}" rel="stylesheet" />
+<title>Blog Application</title>
+<style type="text/css">
+.flex{
+display:flex;
+}
+</style>
+</head>
+<body>
+<nav><h1>Blog App</h1></nav>
+
+<div class="container">
+<span class="posts">
+	<div class="post" th:each="post: ${posts}">
+	<a th:href="@{/view(id=${post.id})}">
+		<h1 th:text="${post.title}"></h1>
+		<div class="flex">
+		<p th:text="${post.author}"> 
+		
+		<p th:text="${{post.createdAt}}">
+		</div>
+		<h4 th:text="${post.content}"></h4>
+	</a>
+	</div>
+</span>
+</div>
+</body></html>
