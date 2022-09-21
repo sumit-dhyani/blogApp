@@ -8,7 +8,7 @@
 
 <form class="container" th:object="${post}" action="create" method="post">
 	<input type="text" th:field="*{title}" placeholder="Enter title">
-	<input type="text" th:field="*{tags}" placeholder="Enter tags">
+	<input type="text" th:field="*{tagField}" placeholder="Enter tags seperated by ,(commas)" />
 	<input type="text" th:field="*{content}" placeholder="Enter Content">
 	<input type="submit">
 </form>

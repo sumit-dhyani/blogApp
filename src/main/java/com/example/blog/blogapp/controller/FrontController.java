@@ -10,14 +10,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
+import com.example.blog.blogapp.service.CommentService;
 import com.example.blog.blogapp.serviceimpl.BlogServiceImpl;
+import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
 
 @Controller
 public class FrontController {
 	@Autowired
 	BlogServiceImpl repo;
 
-	
+	@Autowired
+	CommentServicImpl commentRepo;
 	@GetMapping
 	public String getHomePage(Model model) {
 		model.addAttribute("posts", repo.getBlogPosts());
@@ -39,7 +42,8 @@ public class FrontController {
 	@GetMapping("/view")
 	public String viewPost(@RequestParam("id") String id,Model model) {
 		model.addAttribute("blog", repo.returnBlog(Long.parseLong(id)));
-		model.addAttribute("comment",new Comment());
+		Comment newComment=new Comment();
+		model.addAttribute("newcomment",newComment);
 		model.addAttribute("id",id);
 		return "view.html";
 	}
@@ -48,5 +52,24 @@ public class FrontController {
 		model.addAttribute("blog", repo.returnBlog(Long.parseLong(id)));
 		model.addAttribute("id",id);
 		return "update.html";
+	}
+	
+	@PostMapping("/update")
+	public String updatePost(@ModelAttribute Post updatedPost) {
+		System.out.print(updatedPost);
+		repo.updatePost(updatedPost);
+		return "redirect:/";
+	}
+	
+	@PostMapping("/addcomment")
+	public String addComment(@ModelAttribute("newcomment") Comment comment,@RequestParam("id") long id) {
+		commentRepo.createComment(comment, id);
+		return "redirect:/view?id="+id;
+	}
+	
+	@GetMapping("/delete")
+	public String deletePost(@RequestParam("id") long id) {
+		repo.deletePost(id);
+		return "redirect:/";
 	}
 }

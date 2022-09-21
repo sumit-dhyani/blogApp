@@ -1,30 +1,45 @@
 package com.example.blog.blogapp.entity;
+import java.time.LocalDateTime;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "comments")
 public class Comment {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	private String name;
 	private String email;
 	private String comment;
-	@ManyToOne
+	private LocalDateTime createdAt;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE,
+			 CascadeType.DETACH, CascadeType.REFRESH})
 	private Post post;
+	
 	public Post getPost() {
 		return post;
 	}
 	public void setPost(Post post) {
 		this.post = post;
 	}
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getName() {
@@ -46,11 +61,16 @@ public class Comment {
 		this.comment = comment;
 	}
 	public Comment() {
+		System.out.println("id"+this.id);
 	}
 	public Comment(String name, String email, String comment) {
 		this.name = name;
 		this.email = email;
 		this.comment = comment;
+	}
+	@Override
+	public String toString() {
+		return "Comment [id=" + id + ", name=" + name + ", email=" + email + ", comment=" + comment +"]";
 	}
 	
 }

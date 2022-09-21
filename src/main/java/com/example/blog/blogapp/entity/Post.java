@@ -4,12 +4,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.example.blog.blogapp.repository.BlogRepository;
 
 @Entity
 public class Post {
@@ -19,24 +26,42 @@ public class Post {
     private Long id;
 	@Column(name = "title")
     private String title;
-	@Column(name = "tags")
-    private String tags;
+	@Column(name = "tag_field")
+	private String tagField;
 	private String excerpt;
-	@Column(name = "content")
+	@Column(name = "content",columnDefinition = "LONGTEXT")
     private String content;
 	@Column(name = "author")
     private String author;
 	@Column(name = "published_at")
     private Date publishedAt;
+	public String getTagField() {
+		return tagField;
+	}
+	public void setTagField(String tagField) {
+		this.tagField = tagField;
+	}
+	public List<Tag> getTags() {
+		return tags;
+	}
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
 	@Column(name = "is_published")
     private Boolean isPublished;
 	@Column(name = "created_at")
     private LocalDateTime createdAt;
 	@Column(name = "updated_at")
     private LocalDateTime updatedAt;
-	@OneToMany(mappedBy = "comment")
-	private List<Comment> comments;
-	
+	@OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
+	private Set<Comment> comments=new TreeSet<>();
+//	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE,
+//			 CascadeType.DETACH, CascadeType.REFRESH})
+//	private User user;
+    @ManyToMany(cascade= {CascadeType.PERSIST, CascadeType.MERGE,
+			 CascadeType.DETACH, CascadeType.REFRESH})
+	private List<Tag> tags=new ArrayList<>();
+//	
 	public Long getId() {
 		return id;
 	}
@@ -49,12 +74,7 @@ public class Post {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getTags() {
-		return tags;
-	}
-	public void setTags(String excerpt) {
-		this.tags = excerpt;
-	}
+	
 	public String getContent() {
 		return content;
 	}
@@ -94,7 +114,7 @@ public class Post {
 	public Post(String title, String excerpt, String content, String author, Date publishedAt, Boolean isPublished,
 			LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.title = title;
-		this.tags = excerpt;
+		
 		this.content = content;
 		this.author = author;
 		this.publishedAt = publishedAt;
@@ -109,7 +129,7 @@ public class Post {
 	}
 
 	public Post() {
-		
+		System.out.println("id:"+this.id);
 	}
 	public String getExcerpt() {
 		return excerpt;
@@ -117,13 +137,18 @@ public class Post {
 	public void setExcerpt(String excerpt) {
 		this.excerpt = excerpt;
 	}
-	public List<Comment> getComments() {
+	public Set<Comment> getComments() {
 		return comments;
 	}
-	public void setComments(List<Comment> comments) {
+	public void setComments(Set<Comment> comments) {
 		this.comments = comments;
 	}
-
-
-
+	@Override
+	public String toString() {
+		return "Post [id=" + id + ", title=" + title  + ", excerpt=" + excerpt + ", content="
+				+ content + ", author=" + author + ", publishedAt=" + publishedAt + ", isPublished=" + isPublished
+				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", comments=" + comments + "]";
+	}
+	
+	
 }

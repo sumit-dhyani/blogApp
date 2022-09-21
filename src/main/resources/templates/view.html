@@ -2,6 +2,7 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
 <title>Blog Application</title>
+<link rel="stylesheet" th:href="@{/css/view.css}" >
 <style type="text/css">
 .flex{
 display:flex;
@@ -9,7 +10,11 @@ display:flex;
 </style>
 </head>
 <body>
+<div class="container">
+<div class="actions">
 <a th:href="@{/update(id=${id})}" th:text="update" />
+<a th:href="@{/delete(id=${id})}" th:text="delete" />
+</div>
 <form th:object="${blog}">
 	<h1 th:text="*{title}"></h1>
 	<div class="flex">
@@ -19,14 +24,20 @@ display:flex;
 		</div>
 		
 	<h2 th:text="*{content}"></h2>
-
+<h3> Comments--</h3>
+	<div th:each="com : *{comments}" >
+		<p th:text="${com.email}">
+		<p th:text="${com.name}">
+		<h3 th:text="'Comment: '+${com.comment}"></h3>
+	</div>
 </form>
 
-<form th:action="@{/addcomment}" th:object="${comment}" method="POST">
+<form th:action="@{/addcomment(id=${id})}" th:object="${newcomment}" method="POST">
 	Enter Name: <input type="text" th:field="*{name}" />
 	Enter Email: <input type="email" th:field="*{email}" />
-	Enter Comment: <input type="text" th:field="*{comment}" />
+	Enter Comment: <input class="comment" type="text" th:field="*{comment}" />
 	<input type="submit" value="Add comment" />
 </form>
+</div>
 </body>
 </html>

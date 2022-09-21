@@ -10,14 +10,11 @@ display:flex;
 </head>
 <body>
 <nav><h1>Blog App</h1></nav>
-<form th:object="${blog}">
-	<input th:value="*{title}" />
-
-		<input th:value="*{author}" /> 
-
-		
-	<input class="content" th:value="*{content}" />
-	<input value="submit" type="submit" />
+<form th:object="${blog}" action="update" method="POST">
+    <input type="hidden" th:field="*{id}" />
+	<input th:field="*{title}" />
+	<input class="content" th:field="*{content}" />
+	<input value="Update Post" type="submit" />
 
 </form>
 </body>
