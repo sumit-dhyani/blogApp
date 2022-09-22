@@ -1,0 +1,46 @@
+body{
+	max-width:80vw;
+	width:100%;
+	display:flex;
+	flex-direction:column;
+	margin:0 auto;
+}
+nav{
+	width:100;
+	background-color:black;
+	color:white;
+	font-size:2em;
+	padding:1em;
+}
+.container{
+	padding:1em;
+	display:flex;
+	flex-direction:column;
+	gap:1em;
+	margin:0 auto;
+}
+div{
+	display:flex;
+	gap:1em;
+	align-items:center;
+}
+
+input{
+	font-size:1.2em;
+	padding:.5em;
+}
+input:last-child{
+	width:50%;
+}
+a{
+	text-decoration:none;
+	color:black;
+	padding:.5em;
+	border:1px solid black;
+	font-size:1.2em;
+	border-radius:5px;
+}
+
+textarea{
+	font-size:1.2em;
+}

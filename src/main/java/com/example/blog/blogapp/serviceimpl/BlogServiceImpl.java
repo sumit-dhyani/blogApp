@@ -36,16 +36,14 @@ public class BlogServiceImpl implements BlogService {
 		newPost.setAuthor("Anonymous");
 		newPost.setCreatedAt(LocalDateTime.now());
 		newPost.setIsPublished(false);
+		newPost.setExcerpt(newPost.getContent().substring(0, 100));
 		List<String> tagList=Arrays.asList(newPost.getTagField().split(","));
-		List<Tag> tags=new ArrayList<>();
 		for(String s:tagList) {
-			Tag newTag=new Tag();
-			newTag.setName(s);
-			newTag.setCreatedAt(LocalDateTime.now());
-			tags.add(newTag);
+			Tag tags=new Tag(s,LocalDateTime.now());
+			tags.getPostTag().add(newPost);
+			newPost.getTags().add(tags);
 		}
-		newPost.setTags(tags);
-		newPost.setExcerpt(newPost.getContent());
+		
 		repository.save(newPost);
 		
 	}

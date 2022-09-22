@@ -21,7 +21,6 @@ public class CommentServicImpl implements CommentService {
 	public void createComment(Comment comment, long id) {
 			
 			Post existingPost=service.returnBlog((Long)id);
-			System.out.println(comment);
 			comment.setCreatedAt(LocalDateTime.now());
 			comment.setPost(existingPost);
 			commentRepo.save(comment);

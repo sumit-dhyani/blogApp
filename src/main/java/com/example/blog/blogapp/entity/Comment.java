@@ -20,16 +20,17 @@ public class Comment {
 	private String email;
 	private String comment;
 	private LocalDateTime createdAt;
+	
+	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE,
+			 CascadeType.DETACH, CascadeType.REFRESH})
+	private Post post;
+	
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
-	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE,
-			 CascadeType.DETACH, CascadeType.REFRESH})
-	private Post post;
-	
 	public Post getPost() {
 		return post;
 	}
@@ -61,7 +62,6 @@ public class Comment {
 		this.comment = comment;
 	}
 	public Comment() {
-		System.out.println("id"+this.id);
 	}
 	public Comment(String name, String email, String comment) {
 		this.name = name;

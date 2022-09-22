@@ -20,7 +20,7 @@ body{
 	display:flex;
 	gap:2em;
 }
-.actions a:first-child{
+.menu{
 	margin-left:auto;
 }
 
@@ -37,11 +37,23 @@ form{
 	flex-direction:column;
 	gap:1em;
 }
-input{
+input,textarea{
 	font-size:1.5em;
 }
+.comments-section{
+	margin-top:2em;
+}
+.comments-section h3{
+	border-bottom:2px solid black;
+	width:100%;
+}
 .comment{
-	height:200px;
-	width:200px;
-	padding:0;
+	display:flex;
+	gap:1em;
+	flex-direction:column;
+	
+}
+.comment div{
+	border-bottom:2px solid black;
+	width:max-content;
 }

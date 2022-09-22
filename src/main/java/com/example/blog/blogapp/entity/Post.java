@@ -10,6 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -29,7 +32,7 @@ public class Post {
 	@Column(name = "tag_field")
 	private String tagField;
 	private String excerpt;
-	@Column(name = "content",columnDefinition = "LONGTEXT")
+	@Column(length = 1500)
     private String content;
 	@Column(name = "author")
     private String author;
@@ -58,8 +61,10 @@ public class Post {
 //	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE,
 //			 CascadeType.DETACH, CascadeType.REFRESH})
 //	private User user;
-    @ManyToMany(cascade= {CascadeType.PERSIST, CascadeType.MERGE,
-			 CascadeType.DETACH, CascadeType.REFRESH})
+    @ManyToMany(cascade= CascadeType.ALL)
+    @JoinTable(name="post_tags",
+	joinColumns = { @JoinColumn (name ="post_id")},
+	inverseJoinColumns = { @JoinColumn (name= "tag_id")})
 	private List<Tag> tags=new ArrayList<>();
 //	
 	public Long getId() {

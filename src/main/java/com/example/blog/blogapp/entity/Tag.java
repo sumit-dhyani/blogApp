@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
 
@@ -20,8 +22,7 @@ public class Tag {
 	private String name;
 	@Column(name="created_at")
 	private LocalDateTime createdAt;
-	@ManyToMany(mappedBy = "tags",cascade= {CascadeType.PERSIST, CascadeType.MERGE,
-			 CascadeType.DETACH, CascadeType.REFRESH})
+	@ManyToMany(mappedBy = "tags",cascade= CascadeType.ALL)	
 	private List<Post> postTag=new ArrayList<>();
 	public long getId() {
 		return id;
@@ -49,10 +50,9 @@ public class Tag {
 	public void setPostTag(List<Post> postTag) {
 		this.postTag = postTag;
 	}
-	public Tag(String name, LocalDateTime createdAt, List<Post> post) {
+	public Tag(String name, LocalDateTime createdAt) {
 		this.name = name;
 		this.createdAt = createdAt;
-		this.postTag = post;
 	}
 	public Tag() {
 	}

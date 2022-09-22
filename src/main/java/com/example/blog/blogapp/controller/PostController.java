@@ -15,7 +15,7 @@ import com.example.blog.blogapp.serviceimpl.BlogServiceImpl;
 import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
 
 @Controller
-public class FrontController {
+public class PostController {
 	@Autowired
 	BlogServiceImpl repo;
 
