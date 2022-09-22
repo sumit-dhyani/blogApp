@@ -38,6 +38,7 @@ display:flex;
 		<p th:text="${com.name}">
 		<h4 th:text="'Comment: '+${com.comment}"></h4>
 	</div>	
+	<a th:href="@{/comment/update(id=${com.id})}" th:text="Update" />
 		<a th:href="@{/comment/delete(id=${com.id})}" th:text="Delete" />
 	</div>
 	

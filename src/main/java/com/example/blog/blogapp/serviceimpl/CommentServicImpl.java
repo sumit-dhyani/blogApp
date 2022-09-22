@@ -27,11 +27,23 @@ public class CommentServicImpl implements CommentService {
 
 	}
 	
+	public void updateComment(Comment updatedComment) {
+		Comment existingComment=returnComment(updatedComment.getId());
+		existingComment.setComment(updatedComment.getComment());
+		existingComment.setName(updatedComment.getName());
+		existingComment.setEmail(updatedComment.getEmail());
+		commentRepo.save(existingComment);
+	}
+	
 	public String deleteComment(long id) {
 		Comment commentToBeDeleted=commentRepo.findById(id).orElseThrow(()->new RuntimeException("Comment not found"));
 		Long postId=commentToBeDeleted.getPost().getId();
 		commentRepo.deleteById(id);
 		return postId.toString();
+	}
+	
+	public Comment returnComment(long id) {
+		return commentRepo.findById(id).orElseThrow(()->new RuntimeException("Comment Not Found"));
 	}
 
 }

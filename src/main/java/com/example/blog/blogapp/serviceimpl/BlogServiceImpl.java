@@ -1,37 +1,29 @@
 package com.example.blog.blogapp.serviceimpl;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.time.LocalDateTime;
-
 import java.util.List;
 import java.util.Optional;
-
-import javax.management.RuntimeErrorException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
 import com.example.blog.blogapp.entity.Tag;
 import com.example.blog.blogapp.repository.BlogRepository;
-import com.example.blog.blogapp.repository.CommentRepository;
 import com.example.blog.blogapp.repository.TagRepository;
 import com.example.blog.blogapp.service.BlogService;
 
 @Service
 public class BlogServiceImpl implements BlogService {
 	@Autowired
-	BlogRepository repository;
+	BlogRepository blogRepo;
 	@Autowired
-	TagRepository tagRepository;
+	TagRepository tagRepo;
 	
 	@Override
 	public List<Post> getBlogPosts() {
-		System.out.println(repository.findAll());
-		return repository.findAll(Sort.by(Sort.Direction.DESC,"id"));
+		System.out.println(blogRepo.findAll());
+		return blogRepo.findAll(Sort.by(Sort.Direction.DESC,"id"));
 	}
 
 	@Override
@@ -47,7 +39,7 @@ public class BlogServiceImpl implements BlogService {
 		}
 		List<String> tagList=Arrays.asList(newPost.getTagField().split(","));
 		for(String tag:tagList) {
-			Optional<Tag> existingTag=tagRepository.findByName(tag);
+			Optional<Tag> existingTag=tagRepo.findByName(tag);
 			if(existingTag.isPresent()) {
 				newPost.getTags().add(existingTag.get());
 			}
@@ -58,7 +50,7 @@ public class BlogServiceImpl implements BlogService {
 			}
 		}
 		
-		repository.save(newPost);
+		blogRepo.save(newPost);
 		
 	}
 	
@@ -67,16 +59,17 @@ public class BlogServiceImpl implements BlogService {
 		postToUpdate.setContent(newPost.getContent());
 		postToUpdate.setTitle(newPost.getTitle());
 		postToUpdate.setUpdatedAt(LocalDateTime.now());
-		repository.save(postToUpdate);
+		
+		blogRepo.save(postToUpdate);
 	}
 	
 	public void deletePost(Long id) {
-		repository.deleteById(id);
+		blogRepo.deleteById(id);
 		
 	}
 //	
 	public Post returnBlog(Long id) {
-		return repository.findById(id).
+		return blogRepo.findById(id).
 				orElseThrow(()->new RuntimeException("Blog not present"));
 	}
 	

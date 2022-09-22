@@ -1,0 +1,24 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<title>Blog Application</title>
+<link th:href="@{/css/update.css}" rel="stylesheet" />
+<style type="text/css">
+.flex{
+display:flex;
+}
+</style>
+</head>
+<body>
+<nav><h1>Blog App</h1></nav>
+<form th:object="${existing}" action="update" method="POST">
+    <input type="hidden" th:field="*{id}" />
+	<div>Enter name:<input th:field="*{name}" required /></div>
+	<div>Edit email:<input th:field="*{email}" required/></div>
+	<div>Update Comment:<textarea rows="8" cols="20"  th:field="*{comment}" required/></div>
+	<div class="buttons">
+	<a th:href="@{/view(id=${postid})}" th:text="'Go back'"></a>
+	<input value="Update comment" type="submit" />
+	</div>
+</form>
+</body>
+</html>

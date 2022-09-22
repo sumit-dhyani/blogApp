@@ -15,7 +15,10 @@ display:flex;
 	<div>Enter new Title:<input th:field="*{title}" /></div>
 	<div>Enter/edit tags:<input th:field="*{tagField}" /></div>
 	<div>Update Content:<textarea rows="40" cols="50"  th:field="*{content}" /></div>
+	<div class="buttons">
+	<a th:href="@{/view(id=${blog.id})}" th:text="'Go Back'" />
 	<input value="Update Post" type="submit" />
+	</div>
 
 </form>
 </body>

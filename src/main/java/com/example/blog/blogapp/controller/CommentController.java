@@ -2,6 +2,7 @@ package com.example.blog.blogapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,21 @@ public class CommentController {
 		String postId=commentService.deleteComment(Long.parseLong(id));
 		
 		return "redirect:/view?id="+postId;
+	}
+	
+	@GetMapping("/update")
+	public String updateComment(@RequestParam("id") String id, Model model) {
+		Comment existingComment=commentService.returnComment(Long.parseLong(id));
+		model.addAttribute("existing",existingComment);
+		model.addAttribute("postid",existingComment.getPost().getId());
+		return "updatecomment.html";
+	}
+	
+	@PostMapping("/update")
+	public String updateComment(@ModelAttribute("existing") Comment updatedComment) {
+		commentService.updateComment(updatedComment);
+		Comment existingComment=commentService.returnComment(updatedComment.getId());
+		return "redirect:/view?id="+existingComment.getPost().getId();
 	}
 	
 	@PostMapping("/add")

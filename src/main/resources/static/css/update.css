@@ -35,3 +35,21 @@ input{
 	height:5em;
 	word-wrap:wrap;
 }
+.buttons{
+	display:flex;
+	gap:1em;
+	align-items:center;
+}
+
+.buttons a{
+	text-decoration:none;
+	padding:.5em;
+	border:2px solid black;
+	color:black;
+}
+
+
+
+
+
+

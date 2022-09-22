@@ -1,5 +1,7 @@
 package com.example.blog.blogapp.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
+import com.example.blog.blogapp.repository.BlogRepository;
 import com.example.blog.blogapp.service.CommentService;
 import com.example.blog.blogapp.serviceimpl.BlogServiceImpl;
 import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
@@ -18,7 +21,9 @@ import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
 public class PostController {
 	@Autowired
 	BlogServiceImpl blogRepo;
-
+	
+	@Autowired
+	BlogRepository repo;
 	@Autowired
 	CommentServicImpl commentRepo;
 	@GetMapping
@@ -33,6 +38,15 @@ public class PostController {
 		return "createpost.html";
 	}
 	
+	
+	
+//	@GetMapping("/search")
+//	public void searchField(@RequestParam("name") String name) {
+//		List<Post> getall=repo.findByTitleOrContentOrTagsOrAuthor(name);
+//		for(Post p:getall) {
+//			System.out.println(p.getContent());
+//		}
+//	}
 	@PostMapping("/create")
 	public String createPost(@ModelAttribute Post post) {
 		blogRepo.createPost(post);
@@ -55,7 +69,7 @@ public class PostController {
 	}
 	
 	@PostMapping("/update")
-	public String updatePost(@ModelAttribute Post updatedPost) {
+	public String updatePost(@ModelAttribute("blog") Post updatedPost) {
 		System.out.print(updatedPost);
 		blogRepo.updatePost(updatedPost);
 		return "redirect:/";
