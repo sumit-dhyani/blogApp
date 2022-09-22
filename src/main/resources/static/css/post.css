@@ -36,14 +36,17 @@ a{
 	text-decoration:none;
 	color:black;
 }
+span{
+	display:flex;
+	flex-wrap:wrap;
+	gap:1em;
+	width:100%;
+}
 .posts{
 	
 	display:flex;
-	width:100%;
 	margin:0 auto;
-	flex-wrap:wrap;
-	gap:1em;
-	padding:2em;
+	
 }
 .post{
 	border:2px solid grey;

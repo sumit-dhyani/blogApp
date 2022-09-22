@@ -14,8 +14,8 @@ display:flex;
 <a th:href="@{/create}" th:text="'Add Post'"></a></nav>
 
 <div class="container">
-<span class="posts">
-	<div  th:each="post: ${posts}">
+<span >
+	<div class="posts" th:each="post: ${posts}">
 	<a class="post" th:href="@{/view(id=${post.id})}">
 		<h1 th:text="${post.title}"></h1>
 		<div class="flex">

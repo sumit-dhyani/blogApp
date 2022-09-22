@@ -17,13 +17,13 @@ import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
 @Controller
 public class PostController {
 	@Autowired
-	BlogServiceImpl repo;
+	BlogServiceImpl blogRepo;
 
 	@Autowired
 	CommentServicImpl commentRepo;
 	@GetMapping
 	public String getHomePage(Model model) {
-		model.addAttribute("posts", repo.getBlogPosts());
+		model.addAttribute("posts", blogRepo.getBlogPosts());
 		return "posts.html";
 	}
 
@@ -35,13 +35,13 @@ public class PostController {
 	
 	@PostMapping("/create")
 	public String createPost(@ModelAttribute Post post) {
-		repo.createPost(post);
+		blogRepo.createPost(post);
 		return "redirect:/";
 	} 
 	
 	@GetMapping("/view")
 	public String viewPost(@RequestParam("id") String id,Model model) {
-		model.addAttribute("blog", repo.returnBlog(Long.parseLong(id)));
+		model.addAttribute("blog", blogRepo.returnBlog(Long.parseLong(id)));
 		Comment newComment=new Comment();
 		model.addAttribute("newcomment",newComment);
 		model.addAttribute("id",id);
@@ -49,7 +49,7 @@ public class PostController {
 	}
 	@GetMapping("/update")
 	public String updatePost(@RequestParam("id") String id,Model model) {
-		model.addAttribute("blog", repo.returnBlog(Long.parseLong(id)));
+		model.addAttribute("blog", blogRepo.returnBlog(Long.parseLong(id)));
 		model.addAttribute("id",id);
 		return "update.html";
 	}
@@ -57,19 +57,14 @@ public class PostController {
 	@PostMapping("/update")
 	public String updatePost(@ModelAttribute Post updatedPost) {
 		System.out.print(updatedPost);
-		repo.updatePost(updatedPost);
+		blogRepo.updatePost(updatedPost);
 		return "redirect:/";
 	}
 	
-	@PostMapping("/addcomment")
-	public String addComment(@ModelAttribute("newcomment") Comment comment,@RequestParam("id") long id) {
-		commentRepo.createComment(comment, id);
-		return "redirect:/view?id="+id;
-	}
 	
 	@GetMapping("/delete")
 	public String deletePost(@RequestParam("id") long id) {
-		repo.deletePost(id);
+		blogRepo.deletePost(id);
 		return "redirect:/";
 	}
 }

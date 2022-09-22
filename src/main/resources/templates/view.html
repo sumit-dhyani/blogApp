@@ -45,10 +45,10 @@ display:flex;
 	</div>
 </form>
 
-<form th:action="@{/addcomment(id=${id})}" th:object="${newcomment}" method="POST">
+<form th:action="@{/comment/add(id=${id})}" th:object="${newcomment}" method="POST">
 	<input type="hidden" th:field="*{id}" />
-	Enter Name: <input type="text" th:field="*{name}" />
-	Enter Email: <input type="email" th:field="*{email}" />
+	Enter Name: <input required type="text" th:field="*{name}" />
+	Enter Email: <input required type="email" th:field="*{email}" />
 	Enter Comment: <textarea rows="6" cols="20" class="comment" type="text" th:field="*{comment}" />
 	<input type="submit" value="Add comment" />
 </form>
