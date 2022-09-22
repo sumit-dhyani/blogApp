@@ -53,6 +53,10 @@ input,textarea{
 	flex-direction:column;
 	
 }
+.tags{
+	display:flex;
+	gap:.5em;
+}
 .comment div{
 	border-bottom:2px solid black;
 	width:max-content;

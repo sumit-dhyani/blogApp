@@ -53,7 +53,6 @@ public class BlogServiceImpl implements BlogService {
 		postToUpdate.setContent(newPost.getContent());
 		postToUpdate.setTitle(newPost.getTitle());
 		postToUpdate.setUpdatedAt(LocalDateTime.now());
-		
 		repository.save(postToUpdate);
 	}
 	

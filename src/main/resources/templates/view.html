@@ -23,18 +23,24 @@ display:flex;
 		<p> </p>
 		<p th:text="' '+*{createdAt}">
 		</div>
+		<div class="tags">Tags : 
 		<div th:each="tag : *{tags}" >
 			<p th:text="'#'+${tag.name}" >
+		</div>
 		</div>
 	<h2 th:text="*{content}"></h2>
 	<div class="comments-section">
 <h3> Comments--</h3>
 <span class="comment">
 	<div th:each="com : *{comments}" >
+	<div class="">
 		<p th:text="${com.email}">
 		<p th:text="${com.name}">
 		<h4 th:text="'Comment: '+${com.comment}"></h4>
+	</div>	
+		<a th:href="@{/comment/delete(id=${com.id})}" th:text="Delete" />
 	</div>
+	
 	</span>
 	</div>
 </form>

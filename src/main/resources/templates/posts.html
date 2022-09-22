@@ -15,11 +15,11 @@ display:flex;
 
 <div class="container">
 <span class="posts">
-	<div class="post" th:each="post: ${posts}">
-	<a th:href="@{/view(id=${post.id})}">
+	<div  th:each="post: ${posts}">
+	<a class="post" th:href="@{/view(id=${post.id})}">
 		<h1 th:text="${post.title}"></h1>
 		<div class="flex">
-		<p th:text="${post.author}"> 
+		<p th:text="${post.author}+', '"> 
 		
 		<p th:text="${{post.createdAt}}">
 		</div>

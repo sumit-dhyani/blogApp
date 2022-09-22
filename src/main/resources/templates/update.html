@@ -12,8 +12,9 @@ display:flex;
 <nav><h1>Blog App</h1></nav>
 <form th:object="${blog}" action="update" method="POST">
     <input type="hidden" th:field="*{id}" />
-	<input th:field="*{title}" />
-	<textarea rows="20" cols="60" class="content" th:field="*{content}" />
+	<div>Enter new Title:<input th:field="*{title}" /></div>
+	<div>Enter/edit tags:<input th:field="*{tagField}" /></div>
+	<div>Update Content:<textarea rows="40" cols="50"  th:field="*{content}" /></div>
 	<input value="Update Post" type="submit" />
 
 </form>
