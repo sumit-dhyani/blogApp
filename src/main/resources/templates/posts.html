@@ -2,7 +2,7 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
 <link th:href="@{/css/post.css}" rel="stylesheet" />
-<title>Blog Application</title>
+<title >Blog Application</title>
 <style type="text/css">
 .flex{
 display:flex;
@@ -10,7 +10,11 @@ display:flex;
 </style>
 </head>
 <body>
-<nav><h1>Blog App</h1>
+<nav><h1><a th:href="@{/}" >Blog App </a></h1>
+<form th:action="@{/}">
+	<input name="search" placeholder="Enter Keyword to Search" />
+	<input type="submit" value="Search">
+</form>
 <a th:href="@{/create}" th:text="'Add Post'"></a>
 
 

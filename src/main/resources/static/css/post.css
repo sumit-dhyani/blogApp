@@ -5,6 +5,7 @@
 
 body{
 	width:100vw;
+	padding:0 0 4em 0;
 }
 nav{
 	width:90%;
@@ -13,12 +14,24 @@ nav{
 	background:grey;
 	color:white;
 	padding:1.5em;
+	align-items:center;
+	gap:2em;
 }
 nav h1{
 	align-self:center;
+	
+}
+
+nav form{
+	margin-left:auto;
+}
+nav form input{
+	font-size:1.1em;
+	padding:0.4em;
+	border-radius:15px;
 }
 nav a{
-	margin-left:auto;
+	
 	font-size:1.5em;
 	color:white;
 	padding:.5em;
@@ -70,8 +83,11 @@ footer a{
 	font-size:1.5em;
 	border:2px solid black;
 	color:black;
+	border-radius:5px;
 }
 .next{
 	margin-left:auto;
 }
-
+nav h1 a{
+	border:none;
+}

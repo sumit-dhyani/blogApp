@@ -1,6 +1,8 @@
 package com.example.blog.blogapp.controller;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +30,9 @@ public class PostController {
 	@Autowired
 	CommentServicImpl commentService;
 	@GetMapping
-	public String getHomePage(Model model,@RequestParam(value = "start",required = false) Integer start,@RequestParam(value = "limit",required = false) Integer limit) {
+	public String getHomePage(Model model,@RequestParam(value = "start",required = false) Integer start,
+			@RequestParam(value = "limit",required = false) Integer limit,
+			@RequestParam(value = "search",required = false) String searchField) {
 		if(start!=null && limit!=null) {
 			Pageable pagination=PageRequest.of(start/limit, limit);
 			Page<Post> pageItems=blogService.paginatedPosts(pagination);
@@ -36,6 +40,10 @@ public class PostController {
 			model.addAttribute("totalElements",pageItems.getTotalElements());
 			model.addAttribute("startIndex",start);
 			model.addAttribute("limit",limit);
+		}
+		else if(searchField!=null) {
+			System.out.println(searchField);
+			model.addAttribute("posts",blogService.getSearchedPosts(searchField));
 		}
 		else {
 		model.addAttribute("posts", blogService.getBlogPosts());
@@ -56,10 +64,17 @@ public class PostController {
 	} 
 	
 	@GetMapping("/view")
-	public String viewPost(@RequestParam("id") String id,Model model) {
+	public String viewPost(@RequestParam("id") String id,Model model,@RequestParam(value = "commentId",required = false) String commentId) {
 		model.addAttribute("blog", blogService.returnBlog(Long.parseLong(id)));
+		if(commentId!=null) {
+			Comment newComment=commentService.returnComment(Long.parseLong(commentId));
+			model.addAttribute("newcomment",newComment);
+		}
+		else {
 		Comment newComment=new Comment();
 		model.addAttribute("newcomment",newComment);
+		}
+		
 		model.addAttribute("id",id);
 		return "view.html";
 	}

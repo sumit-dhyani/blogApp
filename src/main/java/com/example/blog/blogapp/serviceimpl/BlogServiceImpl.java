@@ -61,11 +61,26 @@ public class BlogServiceImpl implements BlogService {
 		postToUpdate.setContent(newPost.getContent());
 		postToUpdate.setTitle(newPost.getTitle());
 		postToUpdate.setUpdatedAt(LocalDateTime.now());
-		
+		postToUpdate.setTags(new ArrayList<>());
+		List<String> tagList=Arrays.asList(newPost.getTagField().split(","));
+		for(String tag:tagList) {
+			Optional<Tag> existingTag=tagRepo.findByName(tag);
+			if(existingTag.isPresent()) {
+				postToUpdate.getTags().add(existingTag.get());
+			}
+			else {
+			Tag tags=new Tag(tag,LocalDateTime.now());
+			tags.getPostTag().add(postToUpdate);
+			postToUpdate.getTags().add(tags);
+			}
+		}
+		postToUpdate.setTagField(newPost.getTagField());
 		blogRepo.save(postToUpdate);
 	}
 	
 	public void deletePost(Long id) {
+		Post postToBeDeleted=returnBlog(id);
+		postToBeDeleted.setTags(new ArrayList<>());;
 		blogRepo.deleteById(id);
 		
 	}
@@ -83,6 +98,12 @@ public class BlogServiceImpl implements BlogService {
 	public Page<Post> paginatedPosts(Pageable pagination) {
 		return blogRepo.findAll(pagination);
 		
+	}
+	
+	public List<Post> getSearchedPosts(String searchString) {
+		List<Post> posts=blogRepo.findByMultipleFieldsIgnoreCaseIn(searchString);
+	
+		return posts;
 	}
 	
 
