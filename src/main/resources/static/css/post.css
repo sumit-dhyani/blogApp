@@ -57,3 +57,21 @@ span{
 	flex-direction:column;
 	gap:1em;
 }
+footer{
+	display:flex;
+	position:absolute;
+	bottom:7em;
+	left:7em;
+	right:7em;
+}
+
+footer a{
+	padding:.8em;
+	font-size:1.5em;
+	border:2px solid black;
+	color:black;
+}
+.next{
+	margin-left:auto;
+}
+

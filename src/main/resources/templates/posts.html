@@ -28,7 +28,14 @@ display:flex;
 		</div>
 		<h4 th:text="${post.excerpt}"></h4>
 	</a>
-	</div>
+	</div> 
 </span>
 </div>
+
+
+<footer th:if="${startIndex!=null}"> 
+<a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&limit='+${limit}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
+<a class="next" th:href="@{'/?start='+${startIndex + limit}+'&limit='+${limit}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
+
+</footer>
 </body></html>

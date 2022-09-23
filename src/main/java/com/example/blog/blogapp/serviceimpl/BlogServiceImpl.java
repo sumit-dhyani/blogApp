@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.example.blog.blogapp.entity.Post;
@@ -75,6 +77,12 @@ public class BlogServiceImpl implements BlogService {
 	
 	
 	public BlogServiceImpl() {
+	}
+
+	@Override
+	public Page<Post> paginatedPosts(Pageable pagination) {
+		return blogRepo.findAll(pagination);
+		
 	}
 	
 
