@@ -37,7 +37,7 @@ public class Post {
 	@Column(name = "author")
     private String author;
 	@Column(name = "published_at")
-    private Date publishedAt;
+    private LocalDateTime publishedAt;
 	public String getTagField() {
 		return tagField;
 	}
@@ -51,7 +51,7 @@ public class Post {
 		this.tags = tags;
 	}
 	@Column(name = "is_published")
-    private Boolean isPublished;
+    private boolean isPublished;
 	@Column(name = "created_at")
     private LocalDateTime createdAt;
 	@Column(name = "updated_at")
@@ -92,10 +92,10 @@ public class Post {
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-	public Date getPublishedAt() {
+	public LocalDateTime getPublishedAt() {
 		return publishedAt;
 	}
-	public void setPublishedAt(Date publishedAt) {
+	public void setPublishedAt(LocalDateTime publishedAt) {
 		this.publishedAt = publishedAt;
 	}
 	public Boolean getIsPublished() {
@@ -116,7 +116,7 @@ public class Post {
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-	public Post(String title, String excerpt, String content, String author, Date publishedAt, Boolean isPublished,
+	public Post(String title, String excerpt, String content, String author, LocalDateTime publishedAt, Boolean isPublished,
 			LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.title = title;
 		
@@ -152,7 +152,7 @@ public class Post {
 	public String toString() {
 		return "Post [id=" + id + ", title=" + title  + ", excerpt=" + excerpt + ", content="
 				+ content + ", author=" + author + ", publishedAt=" + publishedAt + ", isPublished=" + isPublished
-				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", comments=" + comments + "]";
+				+ "tagField"+ tagField +", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", comments=" + comments + "]";
 	}
 	
 	

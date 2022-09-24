@@ -16,7 +16,9 @@ public interface BlogRepository extends JpaRepository<Post, Long> {
 
 //	List<Post> findByTitleOrContentOrTagsOrAuthor(String keyword);
 
-	Page<Post> findAll(Pageable paging);
+	Page<Post> findAllByIsPublishedTrue(Pageable paging);
+	
+	Page<Post> findAllByIsPublishedFalse(Pageable paging);
 	
 	List<Post> findByTitleContainingIgnoreCase(String title);
 	

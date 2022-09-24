@@ -17,9 +17,9 @@ display:flex;
 	<div>Update Content:<textarea rows="40" cols="50"  th:field="*{content}" /></div>
 	<div class="buttons">
 	<a th:href="@{/view(id=${blog.id})}" th:text="'Go Back'" />
-	<input value="Update Post" type="submit" />
+	<input value="Save" type="submit" />
+		<input type="submit" value="Publish" th:formaction="'/publish'" />
 	</div>
-
 </form>
 </body>
 </html>

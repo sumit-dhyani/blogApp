@@ -25,13 +25,13 @@ public class PostController {
 	@Autowired
 	BlogServiceImpl blogService;
 	
-	@Autowired
-	BlogRepository blogRepo;
+//	@Autowired
+//	BlogRepository blogRepo;
 	@Autowired
 	CommentServicImpl commentService;
 	@GetMapping
-	public String getHomePage(Model model,@RequestParam(value = "start",required = false) Integer start,
-			@RequestParam(value = "limit",required = false) Integer limit,
+	public String getHomePage(Model model,@RequestParam(value = "start",required = false,defaultValue = "0") Integer start,
+			@RequestParam(value = "limit",required = false,defaultValue = "3") Integer limit,
 			@RequestParam(value = "search",required = false) String searchField) {
 		if(start!=null && limit!=null) {
 			Pageable pagination=PageRequest.of(start/limit, limit);
@@ -97,5 +97,23 @@ public class PostController {
 	public String deletePost(@RequestParam("id") long id) {
 		blogService.deletePost(id);
 		return "redirect:/";
+	}
+	
+	@GetMapping("/draft")
+	public String postNotPublished(@RequestParam("start") int start, Model model) {
+		Pageable pagination=PageRequest.of(start/5, 5);
+		Page<Post> pageItems=blogService.getUnpublishedPost(pagination);
+		model.addAttribute("posts", pageItems);
+		model.addAttribute("totalElements",pageItems.getTotalElements());
+		model.addAttribute("startIndex",start);
+		model.addAttribute("limit",5);
+		return "draft.html";
+	}
+	
+	@PostMapping("/publish")
+	public String publishPost(@ModelAttribute("blog") Post postToPublish) {
+		blogService.publishPost(postToPublish);
+//		System.out.println(postToPublish);
+		return "redirect:/draft?start=0";
 	}
 }

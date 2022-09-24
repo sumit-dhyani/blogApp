@@ -41,7 +41,7 @@ public class BlogServiceImpl implements BlogService {
 		}
 		List<String> tagList=Arrays.asList(newPost.getTagField().split(","));
 		for(String tag:tagList) {
-			Optional<Tag> existingTag=tagRepo.findByName(tag);
+			Optional<Tag> existingTag=tagRepo.findByNameIgnoreCase(tag);
 			if(existingTag.isPresent()) {
 				newPost.getTags().add(existingTag.get());
 			}
@@ -62,9 +62,13 @@ public class BlogServiceImpl implements BlogService {
 		postToUpdate.setTitle(newPost.getTitle());
 		postToUpdate.setUpdatedAt(LocalDateTime.now());
 		postToUpdate.setTags(new ArrayList<>());
+		if(newPost.getIsPublished()==true){
+			postToUpdate.setIsPublished(true);
+		}
+		postToUpdate.setPublishedAt(newPost.getPublishedAt());
 		List<String> tagList=Arrays.asList(newPost.getTagField().split(","));
 		for(String tag:tagList) {
-			Optional<Tag> existingTag=tagRepo.findByName(tag);
+			Optional<Tag> existingTag=tagRepo.findByNameIgnoreCase(tag);
 			if(existingTag.isPresent()) {
 				postToUpdate.getTags().add(existingTag.get());
 			}
@@ -74,6 +78,14 @@ public class BlogServiceImpl implements BlogService {
 			postToUpdate.getTags().add(tags);
 			}
 		}
+		
+		if(newPost.getContent().length()>100) {
+			postToUpdate.setExcerpt(newPost.getContent().substring(0, 100));
+			}
+			else {
+				postToUpdate.setExcerpt(newPost.getContent());
+			}
+		
 		postToUpdate.setTagField(newPost.getTagField());
 		blogRepo.save(postToUpdate);
 	}
@@ -96,7 +108,7 @@ public class BlogServiceImpl implements BlogService {
 
 	@Override
 	public Page<Post> paginatedPosts(Pageable pagination) {
-		return blogRepo.findAll(pagination);
+		return blogRepo.findAllByIsPublishedTrue(pagination);
 		
 	}
 	
@@ -106,5 +118,15 @@ public class BlogServiceImpl implements BlogService {
 		return posts;
 	}
 	
+	public Page<Post> getUnpublishedPost(Pageable pageRequest){
+		return blogRepo.findAllByIsPublishedFalse(pageRequest);
+	}
+	
+	
+	public void publishPost(Post postToPublish) {
+		postToPublish.setPublishedAt(LocalDateTime.now());
+		postToPublish.setIsPublished(true);
+		this.updatePost(postToPublish);
+	}
 
 }

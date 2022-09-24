@@ -8,5 +8,5 @@ import com.example.blog.blogapp.entity.Tag;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 	
-	Optional<Tag> findByName(String name);
+	Optional<Tag> findByNameIgnoreCase(String name);
 }
