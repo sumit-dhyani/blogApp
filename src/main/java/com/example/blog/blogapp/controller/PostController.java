@@ -1,7 +1,8 @@
 package com.example.blog.blogapp.controller;
 
 
-import java.util.List;
+
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,24 +17,66 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
+import com.example.blog.blogapp.entity.Tag;
 import com.example.blog.blogapp.repository.BlogRepository;
 import com.example.blog.blogapp.serviceimpl.BlogServiceImpl;
 import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
+import com.example.blog.blogapp.serviceimpl.TagServiceImpl;
 
 @Controller
 public class PostController {
 	@Autowired
 	BlogServiceImpl blogService;
 	
-//	@Autowired
-//	BlogRepository blogRepo;
+	@Autowired
+	TagServiceImpl tagService;
 	@Autowired
 	CommentServicImpl commentService;
+	
+	
+	
+	@Autowired
+	BlogRepository blogRepo;
+	
 	@GetMapping
 	public String getHomePage(Model model,@RequestParam(value = "start",required = false,defaultValue = "0") Integer start,
 			@RequestParam(value = "limit",required = false,defaultValue = "3") Integer limit,
-			@RequestParam(value = "search",required = false) String searchField) {
-		if(start!=null && limit!=null) {
+			@RequestParam(value = "search",required = false) String searchField,
+			@RequestParam(value="authorId",required=false) String[] authorId,
+			@RequestParam(value="tagId",required=false) String[] tagId,
+			@RequestParam(value="order",required=false) String order){
+		model.addAttribute("tagNames",tagService.getLinkedTags());
+		
+		if(order!=null) {
+			if(order.equals("asc")) {
+					model.addAttribute("posts",blogRepo.findAllByOrderByPublishedAtAsc());
+			}
+			else {
+			model.addAttribute("posts", blogRepo.findAllByOrderByPublishedAtDesc());
+			}
+				
+		}
+		else if(authorId!=null | tagId!=null) {
+			Set<Post> filteredPosts=new HashSet<>();
+			if(tagId!=null) {
+				for(String id:tagId) {
+					Tag fetchedTag=tagService.getTagById(Long.parseLong(id));
+					filteredPosts.addAll(fetchedTag.getPostTag());
+				}
+			}
+			model.addAttribute("posts", filteredPosts);
+		}
+		
+	else if(searchField!=null) {
+			model.addAttribute("search", searchField);
+			Pageable pagination=PageRequest.of(start/limit, limit);
+			Page<Post> paginatedItems=blogService.getSearchedPosts(searchField,pagination);
+			model.addAttribute("posts",paginatedItems);
+			model.addAttribute("startIndex",start);
+			model.addAttribute("totalElements",paginatedItems.getTotalElements());
+			model.addAttribute("limit",limit);
+		}
+		else{
 			Pageable pagination=PageRequest.of(start/limit, limit);
 			Page<Post> pageItems=blogService.paginatedPosts(pagination);
 			model.addAttribute("posts", pageItems);
@@ -41,13 +84,7 @@ public class PostController {
 			model.addAttribute("startIndex",start);
 			model.addAttribute("limit",limit);
 		}
-		else if(searchField!=null) {
-			System.out.println(searchField);
-			model.addAttribute("posts",blogService.getSearchedPosts(searchField));
-		}
-		else {
-		model.addAttribute("posts", blogService.getBlogPosts());
-		}
+		
 		return "posts.html";
 	}
 

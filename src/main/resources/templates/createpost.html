@@ -11,6 +11,8 @@
 	<div>Enter title:<input type="text" th:field="*{title}" required placeholder="Enter title"></div>
 	<div>Enter tags:<input type="text" th:field="*{tagField}" required placeholder="Enter tags seperated by ,(commas)" /></div>
 	<div>Enter Content:<textarea class="content" required rows="30" cols="87" type="text" th:field="*{content}" placeholder="Enter Content" /></div>
-	<div><a th:href="@{/}" th:text="'Go back'" ></a><input type="submit"></div>
+	<div><a th:href="@{/}" th:text="'Go back'" ></a><input type="submit">
+		<input type="submit" value="Publish" th:formaction="'/publish'" />
+	</div>
 </form>
 </body></html>

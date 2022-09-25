@@ -20,8 +20,33 @@ display:flex;
 
 
 </nav>
-
 <div class="container">
+<div class="sidebar">
+	
+	<div class="btn-sort">
+	<p>Sort by Publish Date:</p>
+	<a th:href="@{/?sortField=publishedAt&order=asc}" th:text="Ascending"></a>
+	<a th:href="@{/?sortField=publishedAt&order=dec}" th:text="Descending"></a>
+	</div>
+	<form action="/" >
+	<div>
+		<p>Authors:</p>
+		<input type="checkbox" name="authorId" th:text="Anonymous" value="1">
+	</div>
+	<div class="tags">
+		<p>Tags:</p>
+		<div class="tag-list">
+		<span th:each="tag:${tagNames}">
+		<input type="checkbox" name="tagId" th:text="${tag.name}" th:value="${tag.id}">
+		</span>
+		</div>
+		
+		<input type="submit" value="Filter Results">
+	</div>
+	</form>
+</div>
+
+
 <span >
 	<div class="posts" th:each="post: ${posts}">
 	<a class="post" th:href="@{/view(id=${post.id})}">
@@ -41,6 +66,12 @@ display:flex;
 <footer th:if="${startIndex!=null}"> 
 <a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&limit='+${limit}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
 <a class="next" th:href="@{'/?start='+${startIndex + limit}+'&limit='+${limit}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
+
+</footer>
+
+<footer th:if="${search!=null}"> 
+<a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&search='+${search}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
+<a class="next" th:href="@{'/?start='+${startIndex + limit}+'&search='+${search}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 
 </footer>
 </body></html>

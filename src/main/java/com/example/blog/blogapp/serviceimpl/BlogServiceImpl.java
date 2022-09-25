@@ -108,12 +108,12 @@ public class BlogServiceImpl implements BlogService {
 
 	@Override
 	public Page<Post> paginatedPosts(Pageable pagination) {
-		return blogRepo.findAllByIsPublishedTrue(pagination);
+		return blogRepo. findAllByIsPublishedTrue(pagination);
 		
 	}
 	
-	public List<Post> getSearchedPosts(String searchString) {
-		List<Post> posts=blogRepo.findByMultipleFieldsIgnoreCaseIn(searchString);
+	public Page<Post> getSearchedPosts(String searchString,Pageable paging) {
+		Page<Post> posts=blogRepo.findByMultipleFieldsIgnoreCaseIn(searchString,paging);
 	
 		return posts;
 	}
@@ -128,5 +128,7 @@ public class BlogServiceImpl implements BlogService {
 		postToPublish.setIsPublished(true);
 		this.updatePost(postToPublish);
 	}
+	
+	
 
 }
