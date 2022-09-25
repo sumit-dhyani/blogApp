@@ -48,12 +48,22 @@ public class PostController {
 		model.addAttribute("tagNames",tagService.getLinkedTags());
 		
 		if(order!=null) {
+			model.addAttribute("order", order);
+			Pageable pagination=PageRequest.of(start/limit, limit);
+			model.addAttribute("startIndex",start);
+			
+			model.addAttribute("limit",limit);
 			if(order.equals("asc")) {
-					model.addAttribute("posts",blogRepo.findAllByOrderByPublishedAtAsc());
+					Page<Post> paginatedPosts=blogRepo.findAllByOrderByPublishedAtAsc(pagination);
+					model.addAttribute("posts",paginatedPosts);
+					model.addAttribute("totalElements",paginatedPosts.getTotalElements());
 			}
 			else {
-			model.addAttribute("posts", blogRepo.findAllByOrderByPublishedAtDesc());
+				Page<Post> paginatedPosts=blogRepo.findAllByOrderByPublishedAtDesc(pagination);
+			model.addAttribute("posts", paginatedPosts);
+			model.addAttribute("totalElements",paginatedPosts.getTotalElements());
 			}
+			
 				
 		}
 		else if(authorId!=null | tagId!=null) {

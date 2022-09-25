@@ -21,8 +21,8 @@ public interface BlogRepository extends JpaRepository<Post, Long> {
 	
 	Page<Post> findAllByIsPublishedFalse(Pageable paging);
 	
-	List<Post> findAllByOrderByPublishedAtAsc();
-	List<Post> findAllByOrderByPublishedAtDesc();
+	Page<Post> findAllByOrderByPublishedAtAsc(Pageable paging);
+	Page<Post> findAllByOrderByPublishedAtDesc(Pageable paging);
 	List<Post> findByTitleContainingIgnoreCase(String title);
 	
 	@Query(value="select distinct p.* from post p join post_tags q on p.id=q.post_id where q.tag_id=(select t.id from tag t where lower(t.name)=lower(:r)) or lower(p.title) LIKE lower(concat('%',:r,'%')) or lower(p.content) Like lower(concat('%',:r,'%')) or lower(p.author) LIKE lower(concat('%',:r,'%')) or lower(p.excerpt) LIKE lower(concat('%',:r,'%'))",nativeQuery=true)

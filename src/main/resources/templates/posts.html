@@ -66,7 +66,11 @@ display:flex;
 <footer th:if="${startIndex!=null}"> 
 <a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&limit='+${limit}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
 <a class="next" th:href="@{'/?start='+${startIndex + limit}+'&limit='+${limit}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
+</footer>
 
+<footer th:if="${order!=null}"> 
+<a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&sortField=publishedAt&order='+${order}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
+<a class="next" th:href="@{'/?start='+${startIndex + limit}+'&sortField=publishedAt&order='+${order}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 </footer>
 
 <footer th:if="${search!=null}"> 
