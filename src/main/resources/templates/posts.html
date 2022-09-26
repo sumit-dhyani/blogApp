@@ -31,7 +31,11 @@ display:flex;
 	<form action="/" >
 	<div>
 		<p>Authors:</p>
-		<input type="checkbox" name="authorId" th:text="Anonymous" value="1">
+		<div class="authors">
+		<span th:each="user:${userNames}">
+		<input type="checkbox" name="authorId" th:text="${user.name}" th:value="${user.id}">
+		</span>
+		</div>
 	</div>
 	<div class="tags">
 		<p>Tags:</p>

@@ -11,14 +11,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.example.blog.blogapp.entity.Post;
 import com.example.blog.blogapp.entity.Tag;
-import com.example.blog.blogapp.repository.BlogRepository;
+import com.example.blog.blogapp.entity.User;
+import com.example.blog.blogapp.repository.PostRepository;
 import com.example.blog.blogapp.repository.TagRepository;
-import com.example.blog.blogapp.service.BlogService;
+import com.example.blog.blogapp.service.PostService;
 
 @Service
-public class BlogServiceImpl implements BlogService {
+public class PostServiceImpl implements PostService {
 	@Autowired
-	BlogRepository blogRepo;
+	PostRepository blogRepo;
 	@Autowired
 	TagRepository tagRepo;
 	
@@ -62,7 +63,7 @@ public class BlogServiceImpl implements BlogService {
 		postToUpdate.setTitle(newPost.getTitle());
 		postToUpdate.setUpdatedAt(LocalDateTime.now());
 		postToUpdate.setTags(new ArrayList<>());
-		if(newPost.getIsPublished()==true){
+		if(newPost.getIsPublished()){
 			postToUpdate.setIsPublished(true);
 		}
 		postToUpdate.setPublishedAt(newPost.getPublishedAt());
@@ -103,7 +104,7 @@ public class BlogServiceImpl implements BlogService {
 	}
 	
 	
-	public BlogServiceImpl() {
+	public PostServiceImpl() {
 	}
 
 	@Override
@@ -128,7 +129,23 @@ public class BlogServiceImpl implements BlogService {
 		postToPublish.setIsPublished(true);
 		this.updatePost(postToPublish);
 	}
+
+	@Override
+	public Optional<Post> getFilteredPostsByUserAndTag(String tagId,Long authorId) {
+		return blogRepo.findPostIfUserHasThatTag(Long.parseLong(tagId),authorId);
+		
+	}
 	
-	
+	public Page<Post> findAllByOrderByPublished(String order,Pageable pagination)
+	{
+		Page<Post> sortedPosts;
+		if(order.equals("asc")) {
+			sortedPosts=blogRepo.findAllByOrderByPublishedAtAsc(pagination);
+		}
+		else {
+			sortedPosts=blogRepo.findAllByOrderByPublishedAtDesc(pagination);
+		}
+		return sortedPosts;
+	}
 
 }

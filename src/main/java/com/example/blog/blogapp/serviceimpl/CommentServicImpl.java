@@ -14,7 +14,7 @@ import com.example.blog.blogapp.service.CommentService;
 @Service
 public class CommentServicImpl implements CommentService {
 	@Autowired
-	BlogServiceImpl service;
+	PostServiceImpl service;
 	@Autowired
 	CommentRepository commentRepo;
 	@Override

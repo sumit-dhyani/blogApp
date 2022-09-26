@@ -12,14 +12,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.example.blog.blogapp.repository.BlogRepository;
 
 @Entity
 public class Post {
@@ -58,10 +55,18 @@ public class Post {
     private LocalDateTime updatedAt;
 	@OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
 	private Set<Comment> comments=new TreeSet<>();
-//	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE,
-//			 CascadeType.DETACH, CascadeType.REFRESH})
-//	private User user;
-    @ManyToMany(cascade= CascadeType.ALL)
+	@ManyToOne(cascade= CascadeType.ALL)
+	private User user;
+    public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public void setIsPublished(boolean isPublished) {
+		this.isPublished = isPublished;
+	}
+	@ManyToMany(cascade= CascadeType.ALL)
     @JoinTable(name="post_tags",
 	joinColumns = { @JoinColumn (name ="post_id")},
 	inverseJoinColumns = { @JoinColumn (name= "tag_id")})
@@ -101,9 +106,7 @@ public class Post {
 	public Boolean getIsPublished() {
 		return isPublished;
 	}
-	public void setIsPublished(Boolean isPublished) {	
-		this.isPublished = isPublished;
-	}
+
 	public LocalDate getCreatedAt() {
 		return createdAt.toLocalDate();
 	}
