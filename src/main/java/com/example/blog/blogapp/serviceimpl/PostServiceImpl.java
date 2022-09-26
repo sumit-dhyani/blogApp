@@ -124,7 +124,7 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	
-	public void publishPost(Post postToPublish) {
+	public void publishUpdatedPost(Post postToPublish) {
 		postToPublish.setPublishedAt(LocalDateTime.now());
 		postToPublish.setIsPublished(true);
 		this.updatePost(postToPublish);
@@ -146,6 +146,32 @@ public class PostServiceImpl implements PostService {
 			sortedPosts=blogRepo.findAllByOrderByPublishedAtDesc(pagination);
 		}
 		return sortedPosts;
+	}
+
+	public void publishPost(Post postToPublish) {
+		postToPublish.setCreatedAt(LocalDateTime.now());
+		postToPublish.setPublishedAt(LocalDateTime.now());
+		postToPublish.setIsPublished(true);
+		if(postToPublish.getContent().length()>100) {
+			postToPublish.setExcerpt(postToPublish.getContent().substring(0, 100));
+			}
+			else {
+				postToPublish.setExcerpt(postToPublish.getContent());
+			}
+			List<String> tagList=Arrays.asList(postToPublish.getTagField().split(","));
+			for(String tag:tagList) {
+				Optional<Tag> existingTag=tagRepo.findByNameIgnoreCase(tag);
+				if(existingTag.isPresent()) {
+					postToPublish.getTags().add(existingTag.get());
+				}
+				else {
+				Tag tags=new Tag(tag,LocalDateTime.now());
+				tags.getPostTag().add(postToPublish);
+				postToPublish.getTags().add(tags);
+				}
+			}
+			
+			blogRepo.save(postToPublish);
 	}
 
 }

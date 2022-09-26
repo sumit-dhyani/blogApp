@@ -179,9 +179,15 @@ public class PostController {
 	
 	@PostMapping("/publish")
 	public String publishPost(@ModelAttribute("blog") Post postToPublish) {
-		blogService.publishPost(postToPublish);
+		blogService.publishUpdatedPost(postToPublish);
 //		System.out.println(postToPublish);
 		return "redirect:/draft?start=0";
+	}
+	
+	@PostMapping("/publishnew")
+	public String publishNewPost(@ModelAttribute("blog") Post postToPublish) {
+		blogService.publishPost(postToPublish);
+		return "redirect:/";
 	}
 	
 	
