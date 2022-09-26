@@ -17,8 +17,6 @@ import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
 import com.example.blog.blogapp.entity.Tag;
 import com.example.blog.blogapp.entity.User;
-import com.example.blog.blogapp.repository.PostRepository;
-import com.example.blog.blogapp.repository.UserRepository;
 import com.example.blog.blogapp.serviceimpl.PostServiceImpl;
 import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
 import com.example.blog.blogapp.serviceimpl.TagServiceImpl;
@@ -64,29 +62,51 @@ public class PostController {
 
 		} else if (authorId != null | tagId != null) {
 			Set<Post> filteredPosts = new HashSet<>();
-
+			StringJoiner filteredQuery = new StringJoiner("&authorId=", "&authorId=", "");
+			StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
 			if (tagId != null && authorId != null) {
+
 				for (String userId : authorId) {
+					filteredQuery.add(userId);
 					User author = userService.getUserById(Long.parseLong(userId));
 					for (String tag : tagId) {
-						Optional<Post> postToBeAdded = postService.getFilteredPostsByUserAndTag(tag, author.getId());
-						if (postToBeAdded.isPresent()) {
-							filteredPosts.add(postToBeAdded.get());
+						tagQuery.add(tag);
+						List<Post> postToBeAdded = postService.getFilteredPostsByUserAndTag(tag, author.getId());
+						if (postToBeAdded.size()>0) {
+							filteredPosts.addAll(postToBeAdded);
 						}
 					}
 				}
+				model.addAttribute("filter", filteredQuery.merge(tagQuery));
 			} else if (tagId != null) {
 				for (String id : tagId) {
+					tagQuery.add(id);
 					Tag fetchedTag = tagService.getTagById(Long.parseLong(id));
 					filteredPosts.addAll(fetchedTag.getPostTag());
 				}
+				model.addAttribute("filter", tagQuery);
 			} else {
 				for (String id : authorId) {
+					filteredQuery.add(id);
 					User author = userService.getUserById(Long.parseLong(id));
 					filteredPosts.addAll(author.getPostsByUser());
 				}
+				model.addAttribute("filter", filteredQuery);
 			}
-			model.addAttribute("posts", filteredPosts);
+			List<Long> filteredPostIds = new ArrayList<>();
+			for (Post posts : filteredPosts) {
+				filteredPostIds.add(posts.getId());
+			}
+			System.out.println(filteredPostIds);
+			
+			Pageable pagination = PageRequest.of(start / limit, limit);
+			Page<Post> paginatedPosts = postService.getPaginatedItems(filteredPostIds, pagination);
+			model.addAttribute("posts", paginatedPosts);
+			model.addAttribute("startIndex", start);
+			model.addAttribute("totalElements", paginatedPosts.getTotalElements());
+			System.out.println(paginatedPosts.getTotalElements());
+			model.addAttribute("limit", limit);
+
 		}
 
 		else if (searchField != null) {
@@ -147,7 +167,6 @@ public class PostController {
 
 	@PostMapping("/update")
 	public String updatePost(@ModelAttribute("blog") Post updatedPost) {
-		System.out.print(updatedPost);
 		postService.updatePost(updatedPost);
 		return "redirect:/";
 	}
@@ -159,11 +178,11 @@ public class PostController {
 	}
 
 	@GetMapping("/draft")
-	public String postNotPublished(@RequestParam("start") int start, Model model) {
-		Pageable pagination = PageRequest.of(start / 4, 4);
-		Page<Post> pageItems = postService.getUnpublishedPost(pagination);
-		model.addAttribute("posts", pageItems);
-		model.addAttribute("totalElements", pageItems.getTotalElements());
+	public String postNotPublished(@RequestParam("start") int start, Model model,
+			@RequestParam(value = "limit", defaultValue = "4") int limit) {
+		Page<Post> paginatedPosts = postService.getUnpublishedPost(start, limit);
+		model.addAttribute("posts", paginatedPosts);
+		model.addAttribute("totalElements", paginatedPosts.getTotalElements());
 		model.addAttribute("startIndex", start);
 		model.addAttribute("limit", 4);
 		return "draft.html";
@@ -172,7 +191,6 @@ public class PostController {
 	@PostMapping("/publish")
 	public String publishPost(@ModelAttribute("blog") Post postToPublish) {
 		postService.publishUpdatedPost(postToPublish);
-//		System.out.println(postToPublish);
 		return "redirect:/draft?start=0";
 	}
 

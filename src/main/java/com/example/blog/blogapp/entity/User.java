@@ -14,7 +14,7 @@ public class User {
 	private String name;
 	private String email;
 	private String password;
-	@OneToMany(mappedBy="user",cascade = CascadeType.ALL)
+	@OneToMany(mappedBy="user",cascade = {CascadeType.ALL})
 	private List<Post> postsByUser=new ArrayList<>();
 	public long getId() {
 		return id;

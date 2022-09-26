@@ -21,5 +21,5 @@ public interface PostService {
 
 	public Page<Post> paginatedPosts(Pageable pagination);
 
-	public Optional<Post> getFilteredPostsByUserAndTag(String tagId, Long authorId);
+	public List<Post> getFilteredPostsByUserAndTag(String tagId, Long authorId);
 }

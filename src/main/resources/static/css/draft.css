@@ -46,7 +46,6 @@ nav a{
 	width:92%;
 	display:flex;
 	margin:0 auto;
-	
 	margin-top:2em;
 	
 }
@@ -59,6 +58,7 @@ span{
 	flex-wrap:wrap;
 	gap:1em;
 	width:100%;
+	
 }
 .posts{
 	border:2px solid grey;
@@ -67,7 +67,7 @@ span{
 	max-width:550px;
 	width:100%;
 	max-height:100%;
-	
+	box-shadow:4px 4px  grey;
 }
 .post{
 	

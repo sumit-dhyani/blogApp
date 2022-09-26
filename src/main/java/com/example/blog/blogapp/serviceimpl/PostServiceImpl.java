@@ -2,11 +2,13 @@ package com.example.blog.blogapp.serviceimpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,14 +22,14 @@ import com.example.blog.blogapp.service.PostService;
 @Service
 public class PostServiceImpl implements PostService {
 	@Autowired
-	PostRepository blogRepo;
+	PostRepository postRepo;
 	@Autowired
 	TagRepository tagRepo;
 
 	@Override
 	public List<Post> getBlogPosts() {
-		System.out.println(blogRepo.findAll());
-		return blogRepo.findAll(Sort.by(Sort.Direction.DESC, "id"));
+		System.out.println(postRepo.findAll());
+		return postRepo.findAll(Sort.by(Sort.Direction.DESC, "id"));
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class PostServiceImpl implements PostService {
 			}
 		}
 
-		blogRepo.save(newPost);
+		postRepo.save(newPost);
 
 	}
 
@@ -85,20 +87,20 @@ public class PostServiceImpl implements PostService {
 		}
 
 		postToUpdate.setTagField(newPost.getTagField());
-		blogRepo.save(postToUpdate);
+		postRepo.save(postToUpdate);
 	}
 
 	public void deletePost(Long id) {
 		Post postToBeDeleted = returnBlog(id);
 		postToBeDeleted.setTags(new ArrayList<>());
 		;
-		blogRepo.deleteById(id);
+		postRepo.deleteById(id);
 
 	}
 
 //	
 	public Post returnBlog(Long id) {
-		return blogRepo.findById(id).orElseThrow(() -> new RuntimeException("Blog not present"));
+		return postRepo.findById(id).orElseThrow(() -> new RuntimeException("Blog not present"));
 	}
 
 	public PostServiceImpl() {
@@ -106,18 +108,19 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public Page<Post> paginatedPosts(Pageable pagination) {
-		return blogRepo.findAllByIsPublishedTrue(pagination);
+		return postRepo.findAllByIsPublishedTrue(pagination);
 
 	}
 
 	public Page<Post> getSearchedPosts(String searchString, Pageable paging) {
-		Page<Post> posts = blogRepo.findByMultipleFieldsIgnoreCaseIn(searchString, paging);
+		Page<Post> posts = postRepo.findByMultipleFieldsIgnoreCaseIn(searchString, paging);
 
 		return posts;
 	}
 
-	public Page<Post> getUnpublishedPost(Pageable pageRequest) {
-		return blogRepo.findAllByIsPublishedFalse(pageRequest);
+	public Page<Post> getUnpublishedPost(int start,int limit) {
+		Pageable pageRequest = PageRequest.of(start / 4, 4);
+		return postRepo.findAllByIsPublishedFalse(pageRequest);
 	}
 
 	public void publishUpdatedPost(Post postToPublish) {
@@ -127,17 +130,17 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public Optional<Post> getFilteredPostsByUserAndTag(String tagId, Long authorId) {
-		return blogRepo.findPostIfUserHasThatTag(Long.parseLong(tagId), authorId);
+	public List<Post> getFilteredPostsByUserAndTag(String tagId, Long authorId) {
+		return postRepo.findPostIfUserHasThatTag(Long.parseLong(tagId), authorId);
 
 	}
 
 	public Page<Post> findAllByOrderByPublished(String order, Pageable pagination) {
 		Page<Post> sortedPosts;
 		if (order.equals("asc")) {
-			sortedPosts = blogRepo.findAllByOrderByPublishedAtAsc(pagination);
+			sortedPosts = postRepo.findAllByOrderByPublishedAtAsc(pagination);
 		} else {
-			sortedPosts = blogRepo.findAllByOrderByPublishedAtDesc(pagination);
+			sortedPosts = postRepo.findAllByOrderByPublishedAtDesc(pagination);
 		}
 		return sortedPosts;
 	}
@@ -163,7 +166,13 @@ public class PostServiceImpl implements PostService {
 			}
 		}
 
-		blogRepo.save(postToPublish);
+		postRepo.save(postToPublish);
 	}
+
+	public Page<Post> getPaginatedItems(List<Long> filteredPostIds,Pageable paging) {
+		return postRepo.getResultsById(filteredPostIds, paging);
+	}
+	
+	
 
 }

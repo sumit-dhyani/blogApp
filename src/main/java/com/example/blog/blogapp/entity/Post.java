@@ -29,7 +29,7 @@ public class Post {
 	@Column(name = "tag_field")
 	private String tagField;
 	private String excerpt;
-	@Column(length = 1500)
+	@Column(length = 3000)
     private String content;
 	@Column(name = "author")
     private String author;
@@ -55,7 +55,7 @@ public class Post {
     private LocalDateTime updatedAt;
 	@OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
 	private Set<Comment> comments=new TreeSet<>();
-	@ManyToOne(cascade= CascadeType.ALL)
+	@ManyToOne(cascade= CascadeType.PERSIST)
 	private User user;
     public User getUser() {
 		return user;
