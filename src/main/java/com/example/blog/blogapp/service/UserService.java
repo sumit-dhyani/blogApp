@@ -6,5 +6,6 @@ import com.example.blog.blogapp.entity.User;
 
 public interface UserService {
 	public User getUserById(Long id);
+
 	public List<User> getAllUsers();
 }

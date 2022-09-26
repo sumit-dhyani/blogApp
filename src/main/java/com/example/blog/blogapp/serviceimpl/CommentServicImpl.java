@@ -11,39 +11,42 @@ import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
 import com.example.blog.blogapp.repository.CommentRepository;
 import com.example.blog.blogapp.service.CommentService;
+
 @Service
 public class CommentServicImpl implements CommentService {
 	@Autowired
 	PostServiceImpl service;
 	@Autowired
 	CommentRepository commentRepo;
+
 	@Override
 	public void createComment(Comment comment, long id) {
-			
-			Post existingPost=service.returnBlog((Long)id);
-			comment.setCreatedAt(LocalDateTime.now());
-			comment.setPost(existingPost);
-			commentRepo.save(comment);
+
+		Post existingPost = service.returnBlog((Long) id);
+		comment.setCreatedAt(LocalDateTime.now());
+		comment.setPost(existingPost);
+		commentRepo.save(comment);
 
 	}
-	
-	public void updateComment(Comment updatedComment) {
-		Comment existingComment=returnComment(updatedComment.getId());
+
+	public void updateComment(Comment updatedComment, long id) {
+		Comment existingComment = returnComment(id);
 		existingComment.setComment(updatedComment.getComment());
 		existingComment.setName(updatedComment.getName());
 		existingComment.setEmail(updatedComment.getEmail());
 		commentRepo.save(existingComment);
 	}
-	
+
 	public String deleteComment(long id) {
-		Comment commentToBeDeleted=commentRepo.findById(id).orElseThrow(()->new RuntimeException("Comment not found"));
-		Long postId=commentToBeDeleted.getPost().getId();
+		Comment commentToBeDeleted = commentRepo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Comment not found"));
+		Long postId = commentToBeDeleted.getPost().getId();
 		commentRepo.deleteById(id);
 		return postId.toString();
 	}
-	
+
 	public Comment returnComment(long id) {
-		return commentRepo.findById(id).orElseThrow(()->new RuntimeException("Comment Not Found"));
+		return commentRepo.findById(id).orElseThrow(() -> new RuntimeException("Comment Not Found"));
 	}
 
 }

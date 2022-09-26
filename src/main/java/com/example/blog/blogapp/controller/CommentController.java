@@ -15,34 +15,33 @@ import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
 @Controller
 @RequestMapping("/comment")
 public class CommentController {
-	
+
 	@Autowired
 	CommentServicImpl commentService;
+
 	@GetMapping("/delete")
 	public String deleteComment(@RequestParam("id") String id) {
-		String postId=commentService.deleteComment(Long.parseLong(id));
-		
-		return "redirect:/view?id="+postId;
+		String postId = commentService.deleteComment(Long.parseLong(id));
+
+		return "redirect:/view?id=" + postId;
 	}
-	
+
 	@GetMapping("/update")
 	public String updateComment(@RequestParam("id") String id, Model model) {
-		Comment existingComment=commentService.returnComment(Long.parseLong(id));
-		model.addAttribute("existing",existingComment);
-		model.addAttribute("postid",existingComment.getPost().getId());
+		Comment existingComment = commentService.returnComment(Long.parseLong(id));
+		model.addAttribute("existing", existingComment);
+		model.addAttribute("postid", existingComment.getPost().getId());
 		return "updatecomment.html";
 	}
-	
-	@PostMapping("/update")
-	public String updateComment(@ModelAttribute("existing") Comment updatedComment) {
-		commentService.updateComment(updatedComment);
-		Comment existingComment=commentService.returnComment(updatedComment.getId());
-		return "redirect:/view?id="+existingComment.getPost().getId();
-	}
-	
+
 	@PostMapping("/add")
-	public String addComment(@ModelAttribute("newcomment") Comment comment,@RequestParam("id") long id) {
-		commentService.createComment(comment, id);
-		return "redirect:/view?id="+id;
+	public String addComment(@ModelAttribute("newcomment") Comment comment, @RequestParam("id") long id,
+			@RequestParam(value = "commentId", required = false) String commentId) {
+		if (commentId != null) {
+			commentService.updateComment(comment, Long.parseLong(commentId));
+		} else {
+			commentService.createComment(comment, id);
+		}
+		return "redirect:/view?id=" + id;
 	}
 }

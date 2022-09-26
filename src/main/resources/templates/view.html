@@ -3,11 +3,7 @@
 <head>
 <title>Blog Application</title>
 <link rel="stylesheet" th:href="@{/css/view.css}" >
-<style type="text/css">
-.flex{
-display:flex;
-}
-</style>
+
 </head>
 <body>
 <div class="container">
@@ -33,12 +29,12 @@ display:flex;
 <h3> Comments--</h3>
 <span class="comment">
 	<div th:each="com : *{comments}" >
-	<div class="">
+	<div th:if="${com.id!=commentId}" class="">
 		<p th:text="${com.email}">
 		<p th:text="${com.name}">
 		<h4 th:text="'Comment: '+${com.comment}"></h4>
 	</div>	
-	<a th:href="@{/comment/update(id=${com.id})}" th:text="Update" />
+	<a th:href="@{/view(commentId=${com.id})}+'&id='+${id}" th:text="Update" />
 		<a th:href="@{/comment/delete(id=${com.id})}" th:text="Delete" />
 	</div>
 	
@@ -46,12 +42,17 @@ display:flex;
 	</div>
 </form>
 
-<form th:action="@{/comment/add(id=${id})}" th:object="${newcomment}" method="POST">
-	<input type="hidden" th:field="*{id}" />
+<form th:if="${commentId==null}" th:action="@{/comment/add(id=${id})}" th:object="${newcomment}" method="POST">
 	Enter Name: <input required type="text" th:field="*{name}" />
 	Enter Email: <input required type="email" th:field="*{email}" />
 	Enter Comment: <textarea rows="6" cols="20" class="comment" type="text" th:field="*{comment}" />
 	<input type="submit" value="Add comment" />
+</form>
+<form th:if="${commentId!=null}" th:action="@{/comment/add(id=${id})}+'&commentId='+${commentId}" th:object="${newcomment}" method="POST">
+	Enter Name: <input required type="text" th:field="*{name}" />
+	Enter Email: <input required type="email" th:field="*{email}" />
+	Enter Comment: <textarea rows="6" cols="20" class="comment" type="text" th:field="*{comment}" />
+	<input type="submit" value="Update comment" />
 </form>
 </div>
 </body>

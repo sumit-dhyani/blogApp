@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.blog.blogapp.entity.Tag;
 import com.example.blog.blogapp.repository.TagRepository;
 import com.example.blog.blogapp.service.TagService;
+
 @Service
 public class TagServiceImpl implements TagService {
 	@Autowired
@@ -16,13 +17,12 @@ public class TagServiceImpl implements TagService {
 
 	@Override
 	public Tag getTagById(Long id) {
-		return tagRepo.findById(id).orElseThrow(()->new RuntimeException("Tag id is invalid."));
+		return tagRepo.findById(id).orElseThrow(() -> new RuntimeException("Tag id is invalid."));
 	}
 
 	@Override
 	public List<Tag> getLinkedTags() {
 		return tagRepo.findAllLinkedTags();
 	}
-	
-	
+
 }

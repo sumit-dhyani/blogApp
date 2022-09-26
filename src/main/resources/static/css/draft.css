@@ -1,0 +1,100 @@
+*{
+	margin:0;
+	padding:0;
+}
+
+body{
+	width:100vw;
+	padding:0 0 4em 0;
+}
+nav{
+	width:90%;
+	display:flex;
+	margin:0 auto;
+	background:grey;
+	color:white;
+	padding:1.5em;
+	align-items:center;
+	gap:2em;
+}
+nav h1{
+	align-self:center;
+	
+}
+
+nav form{
+	margin-left:auto;
+}
+nav form input{
+	font-size:1.1em;
+	padding:0.4em;
+	border-radius:15px;
+}
+nav a{
+	
+	font-size:1.5em;
+	color:white;
+	padding:.5em;
+	border:2px solid white;
+	border-radius:6px;
+}
+
+.btn-sort a{
+	text-decoration:underline;
+}
+.container{
+	width:92%;
+	display:flex;
+	margin:0 auto;
+	
+	margin-top:2em;
+	
+}
+a{
+	text-decoration:none;
+	color:black;
+}
+span{
+	display:flex;
+	flex-wrap:wrap;
+	gap:1em;
+	width:100%;
+}
+.posts{
+	border:2px solid grey;
+	display:flex;
+	margin:0 auto;
+	max-width:550px;
+	width:100%;
+	max-height:100%;
+	
+}
+.post{
+	
+	width:100%;
+	padding:.5em;
+	display:flex;
+	flex-direction:column;
+	gap:1em;
+}
+footer{
+	display:flex;
+	position:absolute;
+	bottom:7em;
+	left:7em;
+	right:7em;
+}
+
+footer a{
+	padding:.8em;
+	font-size:1.5em;
+	border:2px solid black;
+	color:black;
+	border-radius:5px;
+}
+.next{
+	margin-left:auto;
+}
+nav h1 a{
+	border:none;
+}

@@ -8,20 +8,21 @@ import org.springframework.stereotype.Service;
 import com.example.blog.blogapp.entity.User;
 import com.example.blog.blogapp.repository.UserRepository;
 import com.example.blog.blogapp.service.UserService;
+
 @Service
 public class UserServiceImpl implements UserService {
-	
+
 	@Autowired
 	UserRepository userRepo;
+
 	@Override
 	public User getUserById(Long id) {
-		return userRepo.findById(id).orElseThrow(()->new RuntimeException("User not found"));
+		return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 	}
+
 	@Override
 	public List<User> getAllUsers() {
 		return userRepo.findAll();
 	}
-
-	
 
 }
