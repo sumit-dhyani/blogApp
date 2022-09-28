@@ -12,9 +12,12 @@ import com.example.blog.blogapp.service.TagService;
 
 @Service
 public class TagServiceImpl implements TagService {
-	@Autowired
-	TagRepository tagRepo;
 
+	private final TagRepository tagRepo;
+	@Autowired
+	public TagServiceImpl(TagRepository tagRepo){
+		this.tagRepo=tagRepo;
+	}
 	@Override
 	public Tag getTagById(Long id) {
 		return tagRepo.findById(id).orElseThrow(() -> new RuntimeException("Tag id is invalid."));

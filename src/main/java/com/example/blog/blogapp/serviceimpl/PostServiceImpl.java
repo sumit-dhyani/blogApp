@@ -1,12 +1,9 @@
 package com.example.blog.blogapp.serviceimpl;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -72,7 +69,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	private void addTags(Post newPost, Post postToUpdate) {
-		List<String> tagList = Arrays.asList(newPost.getTagField().split(","));
+		List<String> tagList = List.of(newPost.getTagField().split(","));
 		for (String tag : tagList) {
 			Optional<Tag> existingTag = tagRepo.findByNameIgnoreCase(tag);
 			if (existingTag.isPresent()) {
@@ -88,7 +85,6 @@ public class PostServiceImpl implements PostService {
 	public void deletePost(Long id) {
 		Post postToBeDeleted = returnBlog(id);
 		postToBeDeleted.setTags(new ArrayList<>());
-		;
 		postRepo.deleteById(id);
 
 	}
@@ -108,19 +104,16 @@ public class PostServiceImpl implements PostService {
 	}
 
 	public Page<Post> getSearchedPosts(String searchString, Pageable paging) {
-		Page<Post> posts = postRepo.findByMultipleFieldsIgnoreCaseIn(searchString, paging);
-
-		return posts;
+		return postRepo.findByMultipleFieldsIgnoreCaseIn(searchString, paging);
 	}
 
 	public List<Post> getSearchedPosts(String searchString) {
-		List<Post> posts = postRepo.findByMultipleFieldsIgnoreCaseIn(searchString);
 
-		return posts;
+		return postRepo.findByMultipleFieldsIgnoreCaseIn(searchString);
 	}
 
 	public Page<Post> getUnpublishedPost(int start,int limit) {
-		Pageable pageRequest = PageRequest.of(start / 4, 4);
+		Pageable pageRequest = PageRequest.of(start / limit, limit);
 		return postRepo.findAllByIsPublishedFalse(pageRequest);
 	}
 
@@ -165,12 +158,80 @@ public class PostServiceImpl implements PostService {
 	}
 
 
-	public List<Post> getFilteredPostsByUserTagAndPublishedDate(String tagId, Long authorId,
-																LocalDate startDate,LocalDate endDate) {
-		return postRepo.findPostIfUserHasThatTagAndDate(Long.valueOf(tagId),authorId,startDate,endDate);
-	}
+
 
 	public List<Post> getPostsBetweenStartAndEndDate(LocalDate startDate, OffsetDateTime endDate){
 		return postRepo.findAllByPublishedAtLessThanEqualAndPublishedAtGreaterThanEqual(endDate, OffsetDateTime.from(startDate));
+	}
+
+
+	public Set<Post> getPostsByTagId(String[] ids){
+		List<Long> tagIds = new ArrayList<>();
+		for(String id:ids){
+			tagIds.add(Long.valueOf(id));
+		}
+		return postRepo.finAllPostsByTag(tagIds);
+	}
+
+
+	public Set<Post> getPostsByUserAndTagId(String[] tIds,String[] uIds){
+		List<Long> tagIds=new ArrayList<>();
+		List<Long> userIds=new ArrayList<>();
+		for(String id:tIds){
+			tagIds.add(Long.valueOf(id));
+		}
+		for(String id:uIds){
+			userIds.add(Long.valueOf(id));
+		}
+		return postRepo.findPostsByUserAndTags(tagIds,userIds);
+	}
+
+	public Page<Post> getPostsByUserAndTagIdSorted(String[] tIds,String[] uIds,String order,Pageable pagination){
+		List<Long> tagIds=new ArrayList<>();
+		List<Long> userIds=new ArrayList<>();
+		for(String id:tIds){
+			tagIds.add(Long.valueOf(id));
+		}
+		for(String id:uIds){
+			userIds.add(Long.valueOf(id));
+		}
+		Set<Post> postsByUidAndTid=postRepo.findPostsByUserAndTags(tagIds,userIds);
+		List<Long> postId=new ArrayList<>();
+		for(Post p:postsByUidAndTid){
+			postId.add(p.getId());
+		}
+
+
+		return postRepo.getResultsById(postId,pagination);
+	}
+
+	public Page<Post> getPostsByAuthorSorted(Integer start, Integer limit, String order, String[] authorId) {
+		Pageable pagination;
+		if(order.equals("asc")){
+			pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").ascending());
+		}
+		else{
+			pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").descending());
+		}
+		List<Long> userIds=new ArrayList<>();
+		for(String uId:authorId){
+			userIds.add(Long.valueOf(uId));
+		}
+		return postRepo.findUsersWithIdSorted(userIds,pagination);
+	}
+
+	public Page<Post> getPostsByTagIdSorted(Integer start, Integer limit, String order, String[] tagId) {
+		Pageable pagination;
+		if(order.equals("asc")){
+			pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").ascending());
+		}
+		else{
+			pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").descending());
+		}
+		List<Long> tagIds=new ArrayList<>();
+		for(String uId:tagId){
+			tagIds.add(Long.valueOf(uId));
+		}
+		return postRepo.findPostsByTagSorted(tagIds,pagination);
 	}
 }

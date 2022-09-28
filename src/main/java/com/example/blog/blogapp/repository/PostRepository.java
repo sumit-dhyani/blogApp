@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -27,7 +28,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query(value = "select * from post where is_published=true order by published_at desc",nativeQuery = true)
     Page<Post> findSortedPublishedPostDesc(Pageable paging);
 
-    List<Post> findByTitleContainingIgnoreCase(String title);
 
     @Query(value = "select distinct p.* from post p join post_tags q on "
             + "p.id=q.post_id where q.tag_id=(select t.id from tag t where "
@@ -60,5 +60,54 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 
     List<Post> findAllByPublishedAtLessThanEqualAndPublishedAtGreaterThanEqual(OffsetDateTime endDate, OffsetDateTime startDate);
+
+    @Query(value = "select p.* from post p join post_tags q on p.id=q.post_id where q.tag_id in (:ids)",nativeQuery = true)
+    Set<Post> finAllPostsByTag(@Param("ids") List<Long> tagIds);
+
+    @Query(value = "select p.* from post p join post_tags q on p.id=q.post_id where q.tag_id in (:tagIds) and p.user_id in (:userIds)",nativeQuery = true)
+    Set<Post> findPostsByUserAndTags(@Param("tagIds") List<Long> tagIds,@Param("userIds") List<Long> userIds);
+
+    @Query(value = "select p.* from post p join post_tags q on p.id=q.post_id where q.tag_id in (:tagIds) and p.user_id in (:userIds) order by published_at :ord",nativeQuery = true)
+    Page<Post> findPostsByUserAndTagsSorted(@Param("tagIds") List<Long> tagIds,
+                                           @Param("userIds") List<Long> userIds,
+                                           @Param("ord") String order,Pageable pagination);
+
+
+    @Query(value = "select * from post p where user_id in (:userIds)", nativeQuery = true)
+    Page<Post> findUsersWithIdSorted(@Param("userIds") List<Long> userIds,Pageable paging);
+
+
+    @Query(value = "select p.* from post p join post_tags q on p.id=q.post_id where q.tag_id in (:tagIds)", nativeQuery = true)
+    Page<Post> findPostsByTagSorted(@Param("tagIds") List<Long> tagIds,Pageable paging);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

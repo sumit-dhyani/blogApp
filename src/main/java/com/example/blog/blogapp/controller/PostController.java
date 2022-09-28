@@ -2,7 +2,6 @@ package com.example.blog.blogapp.controller;
 
 import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
-import com.example.blog.blogapp.entity.Tag;
 import com.example.blog.blogapp.entity.User;
 import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
 import com.example.blog.blogapp.serviceimpl.PostServiceImpl;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +33,7 @@ public class PostController {
     public static final String ORDER = "order";
     public static final String START_DATE = "startDate";
     public static final String END_DATE = "endDate";
+
 
     private final PostServiceImpl postService;
     private final TagServiceImpl tagService;
@@ -60,70 +61,83 @@ public class PostController {
                               @RequestParam(value = START_DATE, required = false) String startDate,
                               @RequestParam(value = END_DATE, required = false) String endDate) {
         model.addAttribute(SEARCH, searchField);
+        model.addAttribute("tagIds",tagId);
+        model.addAttribute("authorIds",authorId);
         model.addAttribute("tagNames", tagService.getLinkedTags());
         List<User> users = userService.getAllUsers();
-        model.addAttribute("tagIds", tagId);
         model.addAttribute("userNames", users);
         if (order != null) {
             model.addAttribute(ORDER, order);
-            Pageable pagination = PageRequest.of(start / limit, limit);
             model.addAttribute("startIndex", start);
             model.addAttribute(LIMIT_PARAM, limit);
-            Page<Post> paginatedPosts = postService.findAllByOrderByPublished(order, pagination);
+            StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
+            StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
+            Page<Post> paginatedPosts;
+            if(authorId!=null && tagId!=null){
+                getParameters(authorId,tagId,userQuery,tagQuery);
+                model.addAttribute("filter",userQuery.toString()+tagQuery.toString());
+                Pageable pagination;
+                if(order.equals("asc")){
+                    pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").ascending());
+                }
+                else{
+                    pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").descending());
+                }
+                paginatedPosts= postService.getPostsByUserAndTagIdSorted(tagId,authorId,order,pagination);
+            } else if (authorId!=null) {
+                getParameters(authorId,userQuery);
+                model.addAttribute("filter",userQuery.toString());
+                paginatedPosts=postService.getPostsByAuthorSorted(start,limit,order,authorId);
+            } else if (tagId!=null) {
+                getParameters(tagId,tagQuery);
+                model.addAttribute("filter",tagQuery.toString());
+                paginatedPosts=postService.getPostsByTagIdSorted(start,limit,order,tagId);
+            } else {
+                Pageable pagination = PageRequest.of(start / limit, limit);
+                paginatedPosts = postService.findAllByOrderByPublished(order, pagination);
+            }
             model.addAttribute("posts", paginatedPosts);
             model.addAttribute("totalElements", paginatedPosts.getTotalElements());
-
         } else if (authorId != null | tagId != null) {
-            Set<Post> filteredPosts = new HashSet<>();
-            StringJoiner filteredQuery = new StringJoiner("&authorId=", "&authorId=", "");
+            StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
             StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
+            Set<Post> filteredPosts = new HashSet<>();
             StringJoiner dateQuery = new StringJoiner("&endDate", "&startDate", "");
             if (tagId != null && authorId != null && searchField != null) {
                 List<Post> searchedPosts = postService.getSearchedPosts(searchField);
                 Set<Post> filtered = new HashSet<>();
-				getParameters(authorId, tagId, filtered, filteredQuery, tagQuery);
-				for (Post ifResultsIncludeSearchItems : searchedPosts) {
-                    if (filtered.contains(ifResultsIncludeSearchItems)) {
-                        filteredPosts.add(ifResultsIncludeSearchItems);
-                    }
-                }
-                model.addAttribute("filter", filteredQuery.merge(tagQuery) + "&search=" + searchField);
-            } else if (tagId != null && authorId != null) {
-				getParameters(authorId, tagId, filteredPosts, filteredQuery, tagQuery);
-				model.addAttribute("filter", filteredQuery.merge(tagQuery));
-            }
-//		 if (startDate!=null && endDate!=null) {
-//					List<Post> postsReturned=postService.getPostsBetweenStartAndEndDate(LocalDate.parse(startDate), OffsetDateTime.parse(endDate));
-//					filteredPosts.addAll(postsReturned);
-//					dateQuery.add(startDate).add(endDate);
-//					model.addAttribute("filter",dateQuery);
-            else if (tagId != null && searchField != null) {
-                List<Post> searchedPosts = postService.getSearchedPosts(searchField);
-                Set<Post> filtered = new HashSet<>();
-                for (String id : tagId) {
-                    tagQuery.add(id);
-                    Tag fetchedTag = tagService.getTagById(Long.parseLong(id));
-                    filtered.addAll(fetchedTag.getPostTag());
-                }
+                getParameters(authorId, tagId, userQuery, tagQuery);
+                filtered = postService.getPostsByUserAndTagId(tagId, authorId);
                 for (Post ifResultsIncludeSearchItems : searchedPosts) {
                     if (filtered.contains(ifResultsIncludeSearchItems)) {
                         filteredPosts.add(ifResultsIncludeSearchItems);
                     }
                 }
-                model.addAttribute("filter", tagQuery + "&search" + searchField);
+                model.addAttribute("filter", userQuery.toString()+tagQuery.toString() + "&search=" + searchField);
+            } else if (tagId != null && authorId != null) {
+                getParameters(authorId, tagId, userQuery, tagQuery);
+                filteredPosts = postService.getPostsByUserAndTagId(tagId, authorId);
+                model.addAttribute("filter", userQuery.toString()+tagQuery.toString());
+            } else if (tagId != null && searchField != null) {
+                getParameters(tagId,tagQuery);
+                List<Post> searchedPosts = postService.getSearchedPosts(searchField);
+                Set<Post> filtered = postService.getPostsByTagId(tagId);
+                for (Post ifResultsIncludeSearchItems : searchedPosts) {
+                    if (filtered.contains(ifResultsIncludeSearchItems)) {
+                        filteredPosts.add(ifResultsIncludeSearchItems);
+                    }
+                }
+                model.addAttribute("filter", tagQuery.toString() + "&search" + searchField);
 
             } else if (tagId != null) {
-                for (String id : tagId) {
-                    tagQuery.add(id);
-                    Tag fetchedTag = tagService.getTagById(Long.parseLong(id));
-                    filteredPosts.addAll(fetchedTag.getPostTag());
-                }
+                getParameters(tagId,tagQuery);
+                filteredPosts = postService.getPostsByTagId(tagId);
                 model.addAttribute("filter", tagQuery);
             } else if (authorId != null && searchField != null) {
                 List<Post> searchedPosts = postService.getSearchedPosts(searchField);
                 Set<Post> filtered = new HashSet<>();
                 for (String id : authorId) {
-                    filteredQuery.add(id);
+                    userQuery.add(id);
                     User author = userService.getUserById(Long.parseLong(id));
                     filteredPosts.addAll(author.getPostsByUser());
                 }
@@ -132,14 +146,14 @@ public class PostController {
                         filteredPosts.add(ifResultsIncludeSearchItems);
                     }
                 }
-                model.addAttribute("filter", filteredQuery + "&search" + searchField);
+                model.addAttribute("filter", userQuery + "&search" + searchField);
             } else {
                 for (String id : authorId) {
-                    filteredQuery.add(id);
+                    userQuery.add(id);
                     User author = userService.getUserById(Long.parseLong(id));
                     filteredPosts.addAll(author.getPostsByUser());
                 }
-                model.addAttribute("filter", filteredQuery);
+                model.addAttribute("filter", userQuery.toString());
             }
             List<Long> filteredPostIds = new ArrayList<>();
             for (Post posts : filteredPosts) {
@@ -173,21 +187,21 @@ public class PostController {
         return "posts.html";
     }
 
-	private void getParameters(@RequestParam(value = AUTHOR_ID, required = false) String[] authorId, @RequestParam(value = TAG_ID, required = false) String[] tagId, Set<Post> filteredPosts, StringJoiner filteredQuery, StringJoiner tagQuery) {
-		for (String userId : authorId) {
-			filteredQuery.add(userId);
-			User author = userService.getUserById(Long.parseLong(userId));
-			for (String tag : tagId) {
-				tagQuery.add(tag);
-				List<Post> postToBeAdded = postService.getFilteredPostsByUserAndTag(tag, author.getId());
-				if (postToBeAdded.size() > 0) {
-					filteredPosts.addAll(postToBeAdded);
-				}
-			}
-		}
-	}
+    private void getParameters(@RequestParam(value = AUTHOR_ID, required = false) String[] authorId, @RequestParam(value = TAG_ID, required = false) String[] tagId, StringJoiner filteredQuery, StringJoiner tagQuery) {
+        for (String userId : authorId) {
+            filteredQuery.add(userId);
+        }
+        for (String tag : tagId) {
+            tagQuery.add(tag);
+        }
+    }
+    private void getParameters(@RequestParam(value = AUTHOR_ID, required = false) String[] ids, StringJoiner Query){
+        for (String userId : ids) {
+            Query.add(userId);
+        }
+    }
 
-	@GetMapping("/create")
+    @GetMapping("/create")
     public String createPage(Model model) {
         model.addAttribute("post", new Post());
         return "createpost.html";
@@ -257,5 +271,4 @@ public class PostController {
         postService.publishPost(postToPublish);
         return "redirect:/";
     }
-
 }
