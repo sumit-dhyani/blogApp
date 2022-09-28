@@ -22,4 +22,6 @@ public interface PostService {
 	public Page<Post> paginatedPosts(Pageable pagination);
 
 	public List<Post> getFilteredPostsByUserAndTag(String tagId, Long authorId);
+
+	public Page<Post> getPaginatedItems(List<Long> filteredPostIds,Pageable paging);
 }

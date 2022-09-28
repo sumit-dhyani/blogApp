@@ -22,7 +22,7 @@ public class Comment {
 	private LocalDateTime createdAt;
 	
 	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE,
-			 CascadeType.DETACH, CascadeType.REFRESH})
+			 CascadeType.DETACH})
 	private Post post;
 	
 	public LocalDateTime getCreatedAt() {

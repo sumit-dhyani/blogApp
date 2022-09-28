@@ -22,7 +22,6 @@ public class CommentController {
 	@GetMapping("/delete")
 	public String deleteComment(@RequestParam("id") String id) {
 		String postId = commentService.deleteComment(Long.parseLong(id));
-
 		return "redirect:/view?id=" + postId;
 	}
 

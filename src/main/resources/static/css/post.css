@@ -2,6 +2,7 @@
 	margin:0;
 	padding:0;
 	box-sizing:border-box;
+	font-family: monospace;
 }
 
 body{
@@ -90,6 +91,7 @@ nav a{
 	display:flex;
 	margin:0 auto;
 	margin-top:2em;
+	padding-top: 1em;
 	}
 a{
 	text-decoration:none;
@@ -140,4 +142,8 @@ footer a{
 }
 nav h1 a{
 	border:none;
+}
+.searchResults{
+	font-size:2em;
+	text-align: center;
 }

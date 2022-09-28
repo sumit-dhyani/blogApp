@@ -20,7 +20,9 @@ display:flex;
 
 
 </nav>
+<p class="searchResults" th:if="${search!=null}" th:text="'Showing Results for :  '+${search}" />
 <div class="container">
+
 <div class="sidebar">
 	
 	<div class="btn-sort">
@@ -28,20 +30,29 @@ display:flex;
 	<a th:href="@{/?sortField=publishedAt&order=asc}" th:text="Ascending"></a>
 	<a th:href="@{/?sortField=publishedAt&order=dec}" th:text="Descending"></a>
 	</div>
-	<form action="/" >
+	<form  action="/">
+
+
 	<div>
 		<p>Authors:</p>
 		<div class="authors">
+			<input type="hidden" th:if="${search!=null}" name="search" th:value="${search}" />
 		<span th:each="user:${userNames}">
 		<input type="checkbox" name="authorId" th:text="${user.name}" th:value="${user.id}">
 		</span>
 		</div>
 	</div>
+<!--		<div>-->
+<!--			<p>Start Date:</p>-->
+<!--			<input type="date" name="startDate" />-->
+<!--			<p>End Date:</p>-->
+<!--			<input type="date" name="endDate" />-->
+<!--		</div>-->
 	<div class="tags">
 		<p>Tags:</p>
 		<div class="tag-list">
 		<span th:each="tag:${tagNames}">
-		<input type="checkbox" name="tagId" th:text="${tag.name}" th:value="${tag.id}">
+		<input type="checkbox"   name="tagId"  th:text="${tag.name}" th:value="${tag.id}">
 		</span>
 		</div>
 		
