@@ -34,10 +34,12 @@ display:flex;
 	
 	<div class="btn-sort">
 	<p>Sort by Publish Date:</p>
-	<a th:if="${filter == null}" th:href="@{/?sortField=publishedAt&order=asc}" th:text="Ascending"></a>
+	<a th:if="${filter == null && startDate == null}" th:href="@{/?sortField=publishedAt&order=asc}" th:text="Ascending"></a>
+		<a th:if="${startDate != null}" th:href="@{'/?sortField=publishedAt&order=asc&startDate='+${startDate}+'&endDate='+${endDate}}" th:text="Ascending"></a>
 		<a th:if="${filter != null}" th:href="@{'/?sortField=publishedAt&order=asc'+${filter}}" th:text="Ascending"></a>
 		<a th:if="${filter!= null}" th:href="@{'/?sortField=publishedAt&order=desc'+${filter}}" th:text="Descending" ></a>
-	<a th:if="${filter==null}" th:href="@{/?sortField=publishedAt&order=desc}" th:text="Descending"></a>
+		<a th:if="${startDate != null}" th:href="@{'/?sortField=publishedAt&order=desc&startDate='+${startDate}+'&endDate='+${endDate}}" th:text="Descending"></a>
+	<a th:if="${filter==null && startDate == null}" th:href="@{/?sortField=publishedAt&order=desc}" th:text="Descending"></a>
 	</div>
 	<form  action="/">
 
@@ -51,12 +53,12 @@ display:flex;
 		</span>
 		</div>
 	</div>
-<!--		<div>-->
-<!--			<p>Start Date:</p>-->
-<!--			<input type="date" name="startDate" />-->
-<!--			<p>End Date:</p>-->
-<!--			<input type="date" name="endDate" />-->
-<!--		</div>-->
+		<div STYLE="margin-bottom: 5px">
+			<p>Start Date:</p>
+			<input type="datetime-local" name="startDate" />
+			<p>End Date:</p>
+			<input type="datetime-local" name="endDate" />
+		</div>
 	<div class="tags">
 		<p>Tags:</p>
 		<div class="tag-list">
@@ -72,13 +74,14 @@ display:flex;
 
 
 <span >
+<!--	<h1 th:if="${#lists.size(posts)==0 && posts==null}" th:text="No records found"></h1>-->
 	<div class="posts" th:each="post: ${posts}">
 	<a class="post" th:href="@{/view(id=${post.id})}">
 		<h1 th:text="${post.title}"></h1>
 		<div class="flex">
-		<p th:text="${post.author}+', '"> 
+		<p th:text="${post.author}+', 	'">
 		
-		<p th:text="${{post.createdAt}}">
+		<p th:text="${{post.publishedAt}}">
 		</div>
 		<h4 th:text="${post.excerpt}"></h4>
 	</a>
@@ -92,8 +95,12 @@ display:flex;
 <a class="next" th:href="@{'/?start='+${startIndex + limit}+'&limit='+${limit}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 </footer>
 
+<footer th:if="${startDate!=null && endDate!=null}" >
+	<a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&limit='+${limit}+'&startDate='+${startDate}+'&endDate='+${endDate}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
+	<a class="next" th:href="@{'/?start='+${startIndex + limit}+'&limit='+${limit}+'&startDate='+${startDate}+'&endDate='+${endDate}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 
-<footer th:if="${filter!=null}"> 
+</footer>
+<footer th:if="${filter!=null && order==null && search==null}">
 <a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+${filter}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
 <a class="next" th:href="@{'/?start='+${startIndex + limit}+${filter}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 </footer>
@@ -103,7 +110,7 @@ display:flex;
 <a class="next" th:href="@{'/?start='+${startIndex + limit}+'&sortField=publishedAt&order='+${order}+${filter}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 </footer>
 
-<footer th:if="${order!=null && filter!=null}">
+<footer th:if="${order!=null && filter==null}">
 	<a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&sortField=publishedAt&order='+${order}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
 	<a class="next" th:href="@{'/?start='+${startIndex + limit}+'&sortField=publishedAt&order='+${order}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 </footer>

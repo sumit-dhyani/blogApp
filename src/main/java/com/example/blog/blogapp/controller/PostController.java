@@ -3,6 +3,7 @@ package com.example.blog.blogapp.controller;
 import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
 import com.example.blog.blogapp.entity.User;
+import com.example.blog.blogapp.repository.PostRepository;
 import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
 import com.example.blog.blogapp.serviceimpl.PostServiceImpl;
 import com.example.blog.blogapp.serviceimpl.TagServiceImpl;
@@ -19,6 +20,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -37,9 +42,7 @@ public class PostController {
 
     private final PostServiceImpl postService;
     private final TagServiceImpl tagService;
-
     private final CommentServicImpl commentService;
-
     private final UserServiceImpl userService;
 
     @Autowired
@@ -50,6 +53,8 @@ public class PostController {
         this.userService = userService;
     }
 
+    @Autowired
+    PostRepository postRepository;
     @GetMapping
     public String getHomePage(Model model,
                               @RequestParam(value = START, required = false, defaultValue = START_INDEX) Integer start,
@@ -59,7 +64,7 @@ public class PostController {
                               @RequestParam(value = TAG_ID, required = false) String[] tagId,
                               @RequestParam(value = ORDER, required = false) String order,
                               @RequestParam(value = START_DATE, required = false) String startDate,
-                              @RequestParam(value = END_DATE, required = false) String endDate) {
+                              @RequestParam(value = END_DATE, required = false) String endDate) throws ParseException {
         model.addAttribute(SEARCH, searchField);
         model.addAttribute("tagIds",tagId);
         model.addAttribute("authorIds",authorId);
@@ -84,6 +89,17 @@ public class PostController {
                     pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").descending());
                 }
                 paginatedPosts= postService.getPostsByUserAndTagIdSorted(tagId,authorId,order,pagination);
+            } else if (startDate != null) {
+                model.addAttribute("startDate",startDate);
+                model.addAttribute("endDate",endDate);
+                Pageable pagination;
+                if(order.equals("asc")) {
+                    pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").ascending());
+                }
+                else{
+                    pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").descending());
+                }
+                paginatedPosts=postService.getPostsByDatesBetweenOrdered(startDate,endDate,pagination);
             } else if (authorId!=null) {
                 getParameters(authorId,userQuery);
                 model.addAttribute("filter",userQuery.toString());
@@ -134,12 +150,13 @@ public class PostController {
                 filteredPosts = postService.getPostsByTagId(tagId);
                 model.addAttribute("filter", tagQuery);
             } else if (authorId != null && searchField != null) {
+                System.out.println("here");
                 List<Post> searchedPosts = postService.getSearchedPosts(searchField);
                 Set<Post> filtered = new HashSet<>();
                 for (String id : authorId) {
                     userQuery.add(id);
                     User author = userService.getUserById(Long.parseLong(id));
-                    filteredPosts.addAll(author.getPostsByUser());
+                    filtered.addAll(author.getPostsByUser());
                 }
                 for (Post ifResultsIncludeSearchItems : searchedPosts) {
                     if (filtered.contains(ifResultsIncludeSearchItems)) {
@@ -167,6 +184,15 @@ public class PostController {
             model.addAttribute("totalElements", paginatedPosts.getTotalElements());
             model.addAttribute(LIMIT_PARAM, limit);
 
+        } else if (startDate != null && endDate!=null){
+            Pageable pageInfo=PageRequest.of(start/limit,limit);
+            model.addAttribute("startDate",startDate);
+            model.addAttribute("endDate",endDate);
+            Page<Post> newPost=postRepository.findAllPostsByPublishedAtBetween(startDate,endDate,pageInfo);
+            model.addAttribute("posts",newPost);
+            model.addAttribute("startIndex", start);
+            model.addAttribute("totalElements", newPost.getTotalElements());
+            model.addAttribute(LIMIT_PARAM, limit);
         } else if (searchField != null) {
 
             Pageable pagination = PageRequest.of(start / limit, limit);

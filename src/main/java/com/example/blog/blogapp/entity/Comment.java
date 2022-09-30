@@ -21,8 +21,7 @@ public class Comment {
 	private String comment;
 	private LocalDateTime createdAt;
 	
-	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE,
-			 CascadeType.DETACH})
+	@ManyToOne
 	private Post post;
 	
 	public LocalDateTime getCreatedAt() {

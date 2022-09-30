@@ -26,7 +26,7 @@ public class Post {
     private String author;
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinTable(name = "post_tags",
             joinColumns = {@JoinColumn(name = "post_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
@@ -37,7 +37,7 @@ public class Post {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Comment> comments = new TreeSet<>();
     @ManyToOne(cascade = CascadeType.PERSIST)
     private User user;

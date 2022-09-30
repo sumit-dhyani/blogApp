@@ -234,4 +234,8 @@ public class PostServiceImpl implements PostService {
 		}
 		return postRepo.findPostsByTagSorted(tagIds,pagination);
 	}
+
+	public Page<Post> getPostsByDatesBetweenOrdered(String startDate,String endDate,Pageable pagination){
+				return postRepo.findAllPostsByPublishedAtBetweenOrdered(startDate,endDate,pagination);
+	}
 }
