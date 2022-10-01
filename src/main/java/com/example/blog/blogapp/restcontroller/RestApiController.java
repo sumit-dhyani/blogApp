@@ -23,7 +23,7 @@ public class RestApiController {
     }
     @GetMapping
     public ResponseEntity<List<Post>> getAllPosts(){
-        return new ResponseEntity<List<Post>>(postRepo.findAll(),HttpStatus.OK);
+        return new ResponseEntity<>(postRepo.findAll(),HttpStatus.OK);
     }
     @GetMapping("{id}")
     public Post getPostById(@PathVariable("id") long id){

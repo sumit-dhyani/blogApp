@@ -21,9 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -44,6 +41,8 @@ public class PostController {
     private final TagServiceImpl tagService;
     private final CommentServicImpl commentService;
     private final UserServiceImpl userService;
+    @Autowired
+    PostRepository postRepository;
 
     @Autowired
     PostController(PostServiceImpl postService, TagServiceImpl tagService, CommentServicImpl commentService, UserServiceImpl userService) {
@@ -53,8 +52,6 @@ public class PostController {
         this.userService = userService;
     }
 
-    @Autowired
-    PostRepository postRepository;
     @GetMapping
     public String getHomePage(Model model,
                               @RequestParam(value = START, required = false, defaultValue = START_INDEX) Integer start,
@@ -66,48 +63,43 @@ public class PostController {
                               @RequestParam(value = START_DATE, required = false) String startDate,
                               @RequestParam(value = END_DATE, required = false) String endDate) throws ParseException {
         model.addAttribute(SEARCH, searchField);
-        model.addAttribute("tagIds",tagId);
-        model.addAttribute("authorIds",authorId);
         model.addAttribute("tagNames", tagService.getLinkedTags());
-        List<User> users = userService.getAllUsers();
-        model.addAttribute("userNames", users);
+        model.addAttribute("userNames", userService.getAllUsers());
+        model.addAttribute(ORDER, order);
+        model.addAttribute("startIndex", start);
+        model.addAttribute(LIMIT_PARAM, limit);
         if (order != null) {
-            model.addAttribute(ORDER, order);
-            model.addAttribute("startIndex", start);
-            model.addAttribute(LIMIT_PARAM, limit);
             StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
             StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
             Page<Post> paginatedPosts;
-            if(authorId!=null && tagId!=null){
-                getParameters(authorId,tagId,userQuery,tagQuery);
-                model.addAttribute("filter",userQuery.toString()+tagQuery.toString());
+            if (authorId != null && tagId != null) {
+                getParameters(authorId, tagId, userQuery, tagQuery);
+                model.addAttribute("filter", userQuery.toString() + tagQuery);
                 Pageable pagination;
-                if(order.equals("asc")){
+                if (order.equals("asc")) {
                     pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").ascending());
+                } else {
+                    pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").descending());
                 }
-                else{
-                    pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").descending());
-                }
-                paginatedPosts= postService.getPostsByUserAndTagIdSorted(tagId,authorId,order,pagination);
+                paginatedPosts = postService.getPostsByUserAndTagIdSorted(tagId, authorId, order, pagination);
             } else if (startDate != null) {
-                model.addAttribute("startDate",startDate);
-                model.addAttribute("endDate",endDate);
+                model.addAttribute("startDate", startDate);
+                model.addAttribute("endDate", endDate);
                 Pageable pagination;
-                if(order.equals("asc")) {
-                    pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").ascending());
+                if (order.equals("asc")) {
+                    pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").ascending());
+                } else {
+                    pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").descending());
                 }
-                else{
-                    pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").descending());
-                }
-                paginatedPosts=postService.getPostsByDatesBetweenOrdered(startDate,endDate,pagination);
-            } else if (authorId!=null) {
-                getParameters(authorId,userQuery);
-                model.addAttribute("filter",userQuery.toString());
-                paginatedPosts=postService.getPostsByAuthorSorted(start,limit,order,authorId);
-            } else if (tagId!=null) {
-                getParameters(tagId,tagQuery);
-                model.addAttribute("filter",tagQuery.toString());
-                paginatedPosts=postService.getPostsByTagIdSorted(start,limit,order,tagId);
+                paginatedPosts = postService.getPostsByDatesBetweenOrdered(startDate, endDate, pagination);
+            } else if (authorId != null) {
+                getParameters(authorId, userQuery);
+                model.addAttribute("filter", userQuery.toString());
+                paginatedPosts = postService.getPostsByAuthorSorted(start, limit, order, authorId);
+            } else if (tagId != null) {
+                getParameters(tagId, tagQuery);
+                model.addAttribute("filter", tagQuery.toString());
+                paginatedPosts = postService.getPostsByTagIdSorted(start, limit, order, tagId);
             } else {
                 Pageable pagination = PageRequest.of(start / limit, limit);
                 paginatedPosts = postService.findAllByOrderByPublished(order, pagination);
@@ -129,13 +121,13 @@ public class PostController {
                         filteredPosts.add(ifResultsIncludeSearchItems);
                     }
                 }
-                model.addAttribute("filter", userQuery.toString()+tagQuery.toString() + "&search=" + searchField);
+                model.addAttribute("filter", userQuery.toString() + tagQuery + "&search=" + searchField);
             } else if (tagId != null && authorId != null) {
                 getParameters(authorId, tagId, userQuery, tagQuery);
                 filteredPosts = postService.getPostsByUserAndTagId(tagId, authorId);
-                model.addAttribute("filter", userQuery.toString()+tagQuery.toString());
+                model.addAttribute("filter", userQuery.toString() + tagQuery);
             } else if (tagId != null && searchField != null) {
-                getParameters(tagId,tagQuery);
+                getParameters(tagId, tagQuery);
                 List<Post> searchedPosts = postService.getSearchedPosts(searchField);
                 Set<Post> filtered = postService.getPostsByTagId(tagId);
                 for (Post ifResultsIncludeSearchItems : searchedPosts) {
@@ -143,14 +135,12 @@ public class PostController {
                         filteredPosts.add(ifResultsIncludeSearchItems);
                     }
                 }
-                model.addAttribute("filter", tagQuery.toString() + "&search" + searchField);
-
+                model.addAttribute("filter", tagQuery + "&search" + searchField);
             } else if (tagId != null) {
-                getParameters(tagId,tagQuery);
+                getParameters(tagId, tagQuery);
                 filteredPosts = postService.getPostsByTagId(tagId);
                 model.addAttribute("filter", tagQuery);
             } else if (authorId != null && searchField != null) {
-                System.out.println("here");
                 List<Post> searchedPosts = postService.getSearchedPosts(searchField);
                 Set<Post> filtered = new HashSet<>();
                 for (String id : authorId) {
@@ -176,40 +166,28 @@ public class PostController {
             for (Post posts : filteredPosts) {
                 filteredPostIds.add(posts.getId());
             }
-
             Pageable pagination = PageRequest.of(start / limit, limit);
             Page<Post> paginatedPosts = postService.getPaginatedItems(filteredPostIds, pagination);
             model.addAttribute("posts", paginatedPosts);
-            model.addAttribute("startIndex", start);
             model.addAttribute("totalElements", paginatedPosts.getTotalElements());
-            model.addAttribute(LIMIT_PARAM, limit);
-
-        } else if (startDate != null && endDate!=null){
-            Pageable pageInfo=PageRequest.of(start/limit,limit);
-            model.addAttribute("startDate",startDate);
-            model.addAttribute("endDate",endDate);
-            Page<Post> newPost=postRepository.findAllPostsByPublishedAtBetween(startDate,endDate,pageInfo);
-            model.addAttribute("posts",newPost);
-            model.addAttribute("startIndex", start);
+        } else if (startDate != null && endDate != null) {
+            Pageable pageInfo = PageRequest.of(start / limit, limit);
+            model.addAttribute("startDate", startDate);
+            model.addAttribute("endDate", endDate);
+            Page<Post> newPost = postRepository.findAllPostsByPublishedAtBetween(startDate, endDate, pageInfo);
+            model.addAttribute("posts", newPost);
             model.addAttribute("totalElements", newPost.getTotalElements());
-            model.addAttribute(LIMIT_PARAM, limit);
         } else if (searchField != null) {
-
             Pageable pagination = PageRequest.of(start / limit, limit);
             Page<Post> paginatedItems = postService.getSearchedPosts(searchField, pagination);
             model.addAttribute("posts", paginatedItems);
-            model.addAttribute("startIndex", start);
             model.addAttribute("totalElements", paginatedItems.getTotalElements());
-            model.addAttribute(LIMIT_PARAM, limit);
         } else {
             Pageable pagination = PageRequest.of(start / limit, limit);
             Page<Post> pageItems = postService.paginatedPosts(pagination);
             model.addAttribute("posts", pageItems);
             model.addAttribute("totalElements", pageItems.getTotalElements());
-            model.addAttribute("startIndex", start);
-            model.addAttribute(LIMIT_PARAM, limit);
         }
-
         return "posts.html";
     }
 
@@ -221,7 +199,8 @@ public class PostController {
             tagQuery.add(tag);
         }
     }
-    private void getParameters(@RequestParam(value = AUTHOR_ID, required = false) String[] ids, StringJoiner Query){
+
+    private void getParameters(@RequestParam(value = AUTHOR_ID, required = false) String[] ids, StringJoiner Query) {
         for (String userId : ids) {
             Query.add(userId);
         }

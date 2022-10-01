@@ -27,9 +27,9 @@ public class CommentController {
 
 	@GetMapping("/update")
 	public String updateComment(@RequestParam("id") String id, Model model) {
-		Comment existingComment = commentService.returnComment(Long.parseLong(id));
-		model.addAttribute("existing", existingComment);
-		model.addAttribute("postid", existingComment.getPost().getId());
+		Comment comment = commentService.returnComment(Long.parseLong(id));
+		model.addAttribute("existing", comment);
+		model.addAttribute("postid", comment.getPost().getId());
 		return "updatecomment.html";
 	}
 

@@ -1,5 +1,7 @@
 package com.example.blog.blogapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.*;
 
 import javax.persistence.*;
@@ -13,6 +15,7 @@ public class User {
 	private long id;
 	private String name;
 	private String email;
+	@JsonIgnore
 	private String password;
 	@OneToMany(mappedBy="user",cascade = {CascadeType.ALL})
 	private List<Post> postsByUser=new ArrayList<>();
@@ -53,6 +56,14 @@ public class User {
 	}
 	public User() {
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", email='" + email + '\'' +
+				", password='" + password + '\'' +
+				'}';
+	}
 }
