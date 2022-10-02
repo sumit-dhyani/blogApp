@@ -13,7 +13,7 @@ display:flex;
 <body>
 <nav>
 	<h1 th:text="${loggedIn}?'Welcome, '+${userName}:'Blog App'"></h1>
-<a th:href="@{/draft?start=0}" th:text="Draft"></a>
+<a th:if="${loggedIn}" th:href="@{/draft?start=0}" th:text="Draft"></a>
 <form  action="/">
 	<input name="search" placeholder="Enter Keyword to Search" />
 	<span th:if="${filter!=null}" th:each="fil: ${authorIds}">

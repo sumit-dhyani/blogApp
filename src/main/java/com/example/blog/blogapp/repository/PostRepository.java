@@ -16,9 +16,6 @@ import java.util.Set;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-
-//	List<Post> findByTitleOrContentOrTagsOrAuthor(String keyword);
-
     Page<Post> findAllByIsPublishedTrue(Pageable paging);
 
     Page<Post> findAllByIsPublishedFalse(Pageable paging);
@@ -28,7 +25,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query(value = "select * from post where is_published=true order by published_at desc",nativeQuery = true)
     Page<Post> findSortedPublishedPostDesc(Pageable paging);
-
+    @Query(value = "select p.* from post p join users u on p.user_id=u.id " +
+            "where p.is_published=false and u.email=:email",nativeQuery = true)
+    Page<Post> findPostsUnpublishedByUser(@Param("email") String email,Pageable paging);
 
     @Query(value = "select distinct p.* from post p join post_tags q on "
             + "p.id=q.post_id where q.tag_id=(select t.id from tag t where "

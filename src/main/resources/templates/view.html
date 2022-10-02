@@ -34,8 +34,8 @@
 		<p th:text="${com.name}">
 		<h4 th:text="'Comment: '+${com.comment}"></h4>
 	</div>	
-	<a th:href="@{/view(commentId=${com.id})}+'&id='+${id}" th:text="Update" />
-		<a th:href="@{/comment/delete(id=${com.id})}" th:text="Delete" />
+	<a th:if="${isAuthor}" th:href="@{/view(commentId=${com.id})}+'&id='+${id}" th:text="Update" />
+		<a th:if="${isAuthor}" th:href="@{/comment/delete(id=${com.id})}" th:text="Delete" />
 	</div>
 	
 	</span>

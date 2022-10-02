@@ -1,6 +1,8 @@
 package com.example.blog.blogapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +22,17 @@ public class CommentController {
 	CommentServiceImpl commentService;
 
 	@GetMapping("/delete")
-	public String deleteComment(@RequestParam("id") String id) {
-		String postId = commentService.deleteComment(Long.parseLong(id));
-		return "redirect:/view?id=" + postId;
+	public String deleteComment(@RequestParam("id") String id, Authentication authentication) {
+		String userEmail=authentication.getName();
+		String authorEmail=commentService.returnComment(Long.parseLong(id)).getPost().getUser().getEmail();
+		if (userEmail.equals(authorEmail)|
+				authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
+			String postId = commentService.deleteComment(Long.parseLong(id));
+			return "redirect:/view?id=" + postId;
+		}
+		else{
+			return "error-404.html";
+		}
 	}
 
 	@GetMapping("/update")

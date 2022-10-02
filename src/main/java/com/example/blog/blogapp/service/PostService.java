@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 public interface PostService {
 	public List<Post> getBlogPosts();
 
-	public void createPost(Post newPost);
+	public void createPost(Post newPost,Authentication authentication);
 
 	public void updatePost(Post newPost);
 

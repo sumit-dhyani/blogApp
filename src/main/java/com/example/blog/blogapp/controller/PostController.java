@@ -38,8 +38,6 @@ public class PostController {
     public static final String ORDER = "order";
     public static final String START_DATE = "startDate";
     public static final String END_DATE = "endDate";
-
-
     private final PostServiceImpl postService;
     private final TagServiceImpl tagService;
     private final CommentServiceImpl commentService;
@@ -211,14 +209,22 @@ public class PostController {
     }
 
     @GetMapping("/create")
-    public String createPage(Model model) {
-        model.addAttribute("post", new Post());
-        return "createpost.html";
+    public String createPage(Model model,Authentication authentication) {
+        if(authentication!=null) {
+            model.addAttribute("post", new Post());
+            User user = userService.getUserByEmail(authentication.getName());
+            model.addAttribute("userName",user.getName());
+            model.addAttribute("userId",user.getId());
+            return "createpost.html";
+        }
+        else{
+            return "error-404.html";
+        }
     }
 
     @PostMapping("/create")
-    public String createPost(@ModelAttribute Post post) {
-        postService.createPost(post);
+    public String createPost(@ModelAttribute Post post,Authentication authentication) {
+        postService.createPost(post,authentication);
         return "redirect:/";
     }
 
@@ -275,8 +281,9 @@ public class PostController {
 
     @GetMapping("/draft")
     public String postNotPublished(@RequestParam(START) int start, Model model,
-                                   @RequestParam(value = LIMIT_PARAM, defaultValue = LIMIT) int limit) {
-        Page<Post> paginatedPosts = postService.getUnpublishedPost(start, limit);
+                                   @RequestParam(value = LIMIT_PARAM, defaultValue = LIMIT) int limit,
+                                   Authentication authentication) {
+        Page<Post> paginatedPosts = postService.getUnpublishedPost(start, limit,authentication);
         model.addAttribute("posts", paginatedPosts);
         model.addAttribute("totalElements", paginatedPosts.getTotalElements());
         model.addAttribute("startIndex", start);

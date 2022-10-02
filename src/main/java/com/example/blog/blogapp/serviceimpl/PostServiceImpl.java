@@ -5,6 +5,8 @@ import java.util.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.example.blog.blogapp.entity.User;
+import com.example.blog.blogapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +27,8 @@ public class PostServiceImpl implements PostService {
 	PostRepository postRepo;
 	@Autowired
 	TagRepository tagRepo;
+	@Autowired
+	UserRepository userRepo;
 
 	@Override
 	public List<Post> getBlogPosts() {
@@ -33,8 +37,10 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public void createPost(Post newPost) {
-		newPost.setAuthor("Anonymous");
+	public void createPost(Post newPost,Authentication authentication) {
+		User user=userRepo.findByEmail(authentication.getName())
+				.orElseThrow(()->new RuntimeException("user not found"));
+		newPost.setAuthor(user.getName());
 		newPost.setCreatedAt(LocalDateTime.now());
 		newPost.setIsPublished(false);
 		if (newPost.getContent().length() > 100) {
@@ -42,8 +48,8 @@ public class PostServiceImpl implements PostService {
 		} else {
 			newPost.setExcerpt(newPost.getContent());
 		}
+		newPost.setUser(user);
 		addTags(newPost, newPost);
-
 		postRepo.save(newPost);
 
 	}
@@ -125,9 +131,9 @@ public class PostServiceImpl implements PostService {
 		return postRepo.findByMultipleFieldsIgnoreCaseIn(searchString);
 	}
 
-	public Page<Post> getUnpublishedPost(int start,int limit) {
+	public Page<Post> getUnpublishedPost(int start,int limit,Authentication authentication) {
 		Pageable pageRequest = PageRequest.of(start / limit, limit);
-		return postRepo.findAllByIsPublishedFalse(pageRequest);
+		return postRepo.findPostsUnpublishedByUser(authentication.getName(),pageRequest);
 	}
 
 	public void publishUpdatedPost(Post postToPublish) {
