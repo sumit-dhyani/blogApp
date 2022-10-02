@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.*;
 
 @Controller
@@ -56,6 +57,7 @@ public class PostController {
 
     @GetMapping
     public String getHomePage(Model model,
+                              Authentication authentication,
                               @RequestParam(value = START, required = false, defaultValue = START_INDEX) Integer start,
                               @RequestParam(value = LIMIT_PARAM, required = false, defaultValue = LIMIT) Integer limit,
                               @RequestParam(value = SEARCH, required = false) String searchField,
@@ -71,6 +73,10 @@ public class PostController {
         model.addAttribute("startIndex", start);
         model.addAttribute(LIMIT_PARAM, limit);
         Page<Post> paginatedPosts;
+        if(authentication!=null){
+            model.addAttribute("loggedIn",true);
+            model.addAttribute("userName",userService.getUserName(authentication.getName()));
+        }
         if (order != null) {
             StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
             StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
@@ -93,7 +99,8 @@ public class PostController {
                 } else {
                     pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").descending());
                 }
-                paginatedPosts = postService.getPostsByDatesBetweenOrdered(startDate, endDate, pagination);
+                paginatedPosts = postService.getPostsByDatesBetweenOrdered(startDate,
+                        LocalDate.parse(endDate).plusDays(1).toString(), pagination);
             } else if (authorId != null) {
                 getParameters(authorId, userQuery);
                 model.addAttribute("filter", userQuery.toString());
@@ -172,7 +179,9 @@ public class PostController {
             Pageable pageInfo = PageRequest.of(start / limit, limit);
             model.addAttribute("startDate", startDate);
             model.addAttribute("endDate", endDate);
-            paginatedPosts = postRepository.findAllPostsByPublishedAtBetween(startDate, endDate, pageInfo);
+            paginatedPosts = postRepository
+                    .findAllPostsByPublishedAtBetween(startDate,
+                            LocalDate.parse(endDate).plusDays(1).toString(), pageInfo);
         } else if (searchField != null) {
             Pageable pagination = PageRequest.of(start / limit, limit);
             paginatedPosts = postService.getSearchedPosts(searchField, pagination);
@@ -215,8 +224,17 @@ public class PostController {
 
     @GetMapping("/view")
     public String viewPost(@RequestParam("id") String id, Model model,
+                           Authentication authentication,
                            @RequestParam(value = "commentId", required = false) String commentId) {
-        model.addAttribute("blog", postService.returnBlog(Long.parseLong(id)));
+        Post post=postService.returnBlog(Long.parseLong(id));
+        model.addAttribute("blog", post);
+        if(authentication!=null) {
+            String userName=authentication.getName();
+            if (post.getUser().getEmail().equals(userName)|
+                    authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
+                model.addAttribute("isAuthor", true);
+            }
+        }
         if (commentId != null) {
             Comment newComment = commentService.returnComment(Long.parseLong(commentId));
             model.addAttribute("newcomment", newComment);
@@ -240,7 +258,7 @@ public class PostController {
             return "update.html";
         }
         else{
-            return "redirect:/";
+            return "error-404.html";
         }
     }
 
@@ -252,7 +270,7 @@ public class PostController {
 
     @GetMapping("/delete")
     public String deletePost(@RequestParam("id") long id,Authentication authentication) {
-        return postService.deletePost(id,authentication)?"redirect:/":"/error.html";
+        return postService.deletePost(id,authentication)?"redirect:/":"error-404.html";
     }
 
     @GetMapping("/draft")

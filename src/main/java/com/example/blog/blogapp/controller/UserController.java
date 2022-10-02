@@ -52,7 +52,7 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         catch (BadCredentialsException e){
-            return "error.html";
+            return "redirect:/login";
         }
         return "redirect:/";
     }
@@ -74,5 +74,7 @@ public class UserController {
         userRepo.save(authorDetails);
         return "redirect:/";
     }
+
+
 
 }

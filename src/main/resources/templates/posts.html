@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <link th:href="@{/css/post.css}" rel="stylesheet" />
 <title >Blog Application</title>
@@ -10,7 +11,8 @@ display:flex;
 </style>
 </head>
 <body>
-<nav><h1><a th:href="@{/}" >Blog App </a></h1>
+<nav>
+	<h1 th:text="${loggedIn}?'Welcome, '+${userName}:'Blog App'"></h1>
 <a th:href="@{/draft?start=0}" th:text="Draft"></a>
 <form  action="/">
 	<input name="search" placeholder="Enter Keyword to Search" />
@@ -23,13 +25,12 @@ display:flex;
 	<input  type="submit" value="Search">
 </form>
 
-<a th:href="@{/create}" th:text="'Add Post'"></a>
-
+<a th:href="${loggedIn} ? '/create' :'/login'" th:text="'Add Post'"></a>
+<a th:href="${loggedIn}? '/logout':'/login'" th:text="${loggedIn}?'Logout':'Login'"></a>
 
 </nav>
 <p class="searchResults" th:if="${search!=null}" th:text="'Showing Results for :  '+${search}" />
 <div class="container">
-
 <div class="sidebar">
 	
 	<div class="btn-sort">
@@ -55,9 +56,9 @@ display:flex;
 	</div>
 		<div STYLE="margin-bottom: 5px">
 			<p>Start Date:</p>
-			<input type="datetime-local" name="startDate" />
+			<input type="date" name="startDate" />
 			<p>End Date:</p>
-			<input type="datetime-local" name="endDate" />
+			<input type="date" name="endDate" />
 		</div>
 	<div class="tags">
 		<p>Tags:</p>

@@ -20,6 +20,10 @@ public class UserServiceImpl implements UserService {
 		return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 	}
 
+	public String getUserName(String email){
+		User user=userRepo.findByEmail(email).orElseThrow(()->new RuntimeException("user not present"));
+		return user.getName();
+	}
 	@Override
 	public List<User> getAllUsers() {
 		return userRepo.findAll();

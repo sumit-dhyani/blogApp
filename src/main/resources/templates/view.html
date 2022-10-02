@@ -9,8 +9,8 @@
 <div class="container">
 <div class="actions">
 <a th:href="@{/}" th:text="Home" />
-<a class="menu" th:href="@{/update(id=${id})}" th:text="update" />
-<a th:href="@{/delete(id=${id})}" th:text="delete" />
+<a th:if="${isAuthor}" class="menu" th:href="@{/update(id=${id})}" th:text="update" />
+<a th:if="${isAuthor}" th:href="@{/delete(id=${id})}" th:text="delete" />
 </div>
 <form th:object="${blog}">
 	<h1 th:text="*{title}"></h1>
