@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import com.example.blog.blogapp.entity.Post;
 import com.example.blog.blogapp.entity.Tag;
@@ -82,10 +84,15 @@ public class PostServiceImpl implements PostService {
 		}
 	}
 
-	public void deletePost(Long id) {
-		Post postToBeDeleted = returnBlog(id);
-		postToBeDeleted.setTags(new ArrayList<>());
-		postRepo.deleteById(id);
+	public boolean deletePost(Long id,Authentication authentication) {
+		Post post = returnBlog(id);
+		if(authentication.getName().equals(post.getUser().getEmail())|
+				authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
+			post.setTags(new ArrayList<>());
+			postRepo.deleteById(id);
+			return true;
+		}
+		return false;
 
 	}
 
@@ -94,9 +101,15 @@ public class PostServiceImpl implements PostService {
 		return postRepo.findById(id).orElseThrow(() -> new RuntimeException("Blog not present"));
 	}
 
-	public PostServiceImpl() {
+	public Post returnBlog(Long id, Authentication authentication){
+		Post post=postRepo.findById(id).orElseThrow(() -> new RuntimeException("Blog not present"));
+		System.out.println("hello"+post.getUser().getEmail());
+		if(authentication.getName().equals(post.getUser().getEmail())|
+				authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))){
+			return post;
+		}
+		return null;
 	}
-
 	@Override
 	public Page<Post> paginatedPosts(Pageable pagination) {
 		return postRepo.findAllByIsPublishedTrue(pagination);

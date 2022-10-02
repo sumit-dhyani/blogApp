@@ -1,8 +1,20 @@
 package com.example.blog.blogapp.model;
 
+import com.example.blog.blogapp.entity.UserAuthority;
+
 public class UserModel {
     private String email;
     private String password;
+
+    private UserAuthority userAuthority;
+
+    public UserAuthority getUserAuthority() {
+        return userAuthority;
+    }
+
+    public void setUserAuthority(UserAuthority userAuthority) {
+        this.userAuthority = userAuthority;
+    }
 
     public String getEmail() {
         return email;

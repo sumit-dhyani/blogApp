@@ -4,7 +4,7 @@ import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
 import com.example.blog.blogapp.entity.User;
 import com.example.blog.blogapp.repository.PostRepository;
-import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
+import com.example.blog.blogapp.serviceimpl.CommentServiceImpl;
 import com.example.blog.blogapp.serviceimpl.PostServiceImpl;
 import com.example.blog.blogapp.serviceimpl.TagServiceImpl;
 import com.example.blog.blogapp.serviceimpl.UserServiceImpl;
@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,13 +41,13 @@ public class PostController {
 
     private final PostServiceImpl postService;
     private final TagServiceImpl tagService;
-    private final CommentServicImpl commentService;
+    private final CommentServiceImpl commentService;
     private final UserServiceImpl userService;
     @Autowired
     PostRepository postRepository;
 
     @Autowired
-    PostController(PostServiceImpl postService, TagServiceImpl tagService, CommentServicImpl commentService, UserServiceImpl userService) {
+    PostController(PostServiceImpl postService, TagServiceImpl tagService, CommentServiceImpl commentService, UserServiceImpl userService) {
         this.postService = postService;
         this.tagService = tagService;
         this.commentService = commentService;
@@ -68,10 +70,10 @@ public class PostController {
         model.addAttribute(ORDER, order);
         model.addAttribute("startIndex", start);
         model.addAttribute(LIMIT_PARAM, limit);
+        Page<Post> paginatedPosts;
         if (order != null) {
             StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
             StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
-            Page<Post> paginatedPosts;
             if (authorId != null && tagId != null) {
                 getParameters(authorId, tagId, userQuery, tagQuery);
                 model.addAttribute("filter", userQuery.toString() + tagQuery);
@@ -104,8 +106,6 @@ public class PostController {
                 Pageable pagination = PageRequest.of(start / limit, limit);
                 paginatedPosts = postService.findAllByOrderByPublished(order, pagination);
             }
-            model.addAttribute("posts", paginatedPosts);
-            model.addAttribute("totalElements", paginatedPosts.getTotalElements());
         } else if (authorId != null | tagId != null) {
             StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
             StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
@@ -167,27 +167,22 @@ public class PostController {
                 filteredPostIds.add(posts.getId());
             }
             Pageable pagination = PageRequest.of(start / limit, limit);
-            Page<Post> paginatedPosts = postService.getPaginatedItems(filteredPostIds, pagination);
-            model.addAttribute("posts", paginatedPosts);
-            model.addAttribute("totalElements", paginatedPosts.getTotalElements());
+            paginatedPosts = postService.getPaginatedItems(filteredPostIds, pagination);
         } else if (startDate != null && endDate != null) {
             Pageable pageInfo = PageRequest.of(start / limit, limit);
             model.addAttribute("startDate", startDate);
             model.addAttribute("endDate", endDate);
-            Page<Post> newPost = postRepository.findAllPostsByPublishedAtBetween(startDate, endDate, pageInfo);
-            model.addAttribute("posts", newPost);
-            model.addAttribute("totalElements", newPost.getTotalElements());
+            paginatedPosts = postRepository.findAllPostsByPublishedAtBetween(startDate, endDate, pageInfo);
         } else if (searchField != null) {
             Pageable pagination = PageRequest.of(start / limit, limit);
-            Page<Post> paginatedItems = postService.getSearchedPosts(searchField, pagination);
-            model.addAttribute("posts", paginatedItems);
-            model.addAttribute("totalElements", paginatedItems.getTotalElements());
+            paginatedPosts = postService.getSearchedPosts(searchField, pagination);
         } else {
             Pageable pagination = PageRequest.of(start / limit, limit);
-            Page<Post> pageItems = postService.paginatedPosts(pagination);
-            model.addAttribute("posts", pageItems);
-            model.addAttribute("totalElements", pageItems.getTotalElements());
+            paginatedPosts = postService.paginatedPosts(pagination);
+
         }
+        model.addAttribute("posts", paginatedPosts);
+        model.addAttribute("totalElements", paginatedPosts.getTotalElements());
         return "posts.html";
     }
 
@@ -236,10 +231,17 @@ public class PostController {
     }
 
     @GetMapping("/update")
-    public String updatePost(@RequestParam("id") String id, Model model) {
-        model.addAttribute("blog", postService.returnBlog(Long.parseLong(id)));
-        model.addAttribute("id", id);
-        return "update.html";
+    public String updatePost(@RequestParam("id") String id, Model model,Authentication authentication) {
+        Post post=postService.returnBlog(Long.parseLong(id),authentication);
+        System.out.println(post);
+        if(post!=null){
+            model.addAttribute("blog", post);
+            model.addAttribute("id", id);
+            return "update.html";
+        }
+        else{
+            return "redirect:/";
+        }
     }
 
     @PostMapping("/update")
@@ -249,9 +251,8 @@ public class PostController {
     }
 
     @GetMapping("/delete")
-    public String deletePost(@RequestParam("id") long id) {
-        postService.deletePost(id);
-        return "redirect:/";
+    public String deletePost(@RequestParam("id") long id,Authentication authentication) {
+        return postService.deletePost(id,authentication)?"redirect:/":"/error.html";
     }
 
     @GetMapping("/draft")

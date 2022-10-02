@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-public class CommentServicImpl implements CommentService {
+public class CommentServiceImpl implements CommentService {
 
     private final PostServiceImpl postService;
     private final CommentRepository commentRepo;
 	@Autowired
-	public CommentServicImpl(PostServiceImpl postService,CommentRepository commentRepo){
+	public CommentServiceImpl(PostServiceImpl postService, CommentRepository commentRepo){
 		this.commentRepo=commentRepo;
 		this.postService =postService;
 	}

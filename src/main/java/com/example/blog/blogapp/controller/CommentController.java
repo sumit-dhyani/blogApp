@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.blog.blogapp.entity.Comment;
-import com.example.blog.blogapp.serviceimpl.CommentServicImpl;
+import com.example.blog.blogapp.serviceimpl.CommentServiceImpl;
 
 @Controller
 @RequestMapping("/comment")
 public class CommentController {
 
 	@Autowired
-	CommentServicImpl commentService;
+	CommentServiceImpl commentService;
 
 	@GetMapping("/delete")
 	public String deleteComment(@RequestParam("id") String id) {

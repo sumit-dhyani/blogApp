@@ -16,8 +16,8 @@ public class AuthorDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User author=userRepo.findByEmail(email).orElseThrow(()->new RuntimeException("user not found"));
-        return new org.springframework.security.core.userdetails.User(author.getEmail(),author.getPassword(),new ArrayList<>());
+        return new org.springframework.security.core.userdetails
+                .User(author.getEmail(),author.getPassword(),new ArrayList<>());
     }
-
 
 }

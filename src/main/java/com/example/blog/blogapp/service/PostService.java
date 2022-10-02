@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.blog.blogapp.entity.Post;
 import com.example.blog.blogapp.entity.User;
+import org.springframework.security.core.Authentication;
 
 public interface PostService {
 	public List<Post> getBlogPosts();
@@ -15,7 +16,7 @@ public interface PostService {
 
 	public void updatePost(Post newPost);
 
-	public void deletePost(Long id);
+	public boolean deletePost(Long id, Authentication authentication);
 
 	public Post returnBlog(Long id);
 

@@ -31,11 +31,19 @@ public class UserController {
 
     @GetMapping("/login")
     public String showLoginPage() {
+
         return "login.html";
+    }
+    @RequestMapping("/login-fail")
+    public String loginError(Model model) {
+        model.addAttribute("loginError", true);
+
+        return "redirect:/login";
     }
 
     @PostMapping("/loginSubmit")
     public String submitLoginDetails(@ModelAttribute UserModel userModel) throws Exception {
+
         Authentication authentication;
         try{
             authentication=authManager.
@@ -44,7 +52,7 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         catch (BadCredentialsException e){
-            throw new Exception("Invalid Credentials");
+            return "error.html";
         }
         return "redirect:/";
     }
@@ -56,7 +64,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/registered")
+    @PostMapping("/registered")
     public String registerUser(@ModelAttribute User author){
         System.out.println(author);
         User authorDetails=new User();
@@ -66,4 +74,5 @@ public class UserController {
         userRepo.save(authorDetails);
         return "redirect:/";
     }
+
 }

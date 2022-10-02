@@ -17,6 +17,18 @@ public class User {
 	private String email;
 	@JsonIgnore
 	private String password;
+
+	@OneToOne
+	private UserAuthority userAuthority;
+
+	public UserAuthority getUserAuthority() {
+		return userAuthority;
+	}
+
+	public void setUserAuthority(UserAuthority userAuthority) {
+		this.userAuthority = userAuthority;
+	}
+
 	@OneToMany(mappedBy="user",cascade = {CascadeType.ALL})
 	private List<Post> postsByUser=new ArrayList<>();
 	public long getId() {

@@ -22,6 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
     @Autowired
     private UserDetailsService authorDetailsService;
@@ -29,14 +30,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
     private CustomAuthenticationProvider authProvider;
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().
-
-                authorizeHttpRequests().
-                antMatchers("/","/register","/registered","/login","/loginSubmit").
+        http
+                .csrf()
+                .disable()
+                .authorizeHttpRequests().
+                antMatchers("/","/view","/register","/registered",
+                        "/login","/loginSubmit","/comment/**").
                 permitAll().
-                antMatchers("/view").
-                authenticated().
+                antMatchers("/draft","/publish","/publishnew","/delete","/update")
+                .hasAnyAuthority("AUTHOR","ADMIN").
+                and()
+                .formLogin()
+                .loginPage("/login")
+                .permitAll().
                 and().
+                logout()
+                .logoutSuccessUrl("/").permitAll().and().
                 httpBasic();
     }
 
