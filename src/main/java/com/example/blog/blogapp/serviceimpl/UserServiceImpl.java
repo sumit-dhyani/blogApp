@@ -11,9 +11,11 @@ import com.example.blog.blogapp.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
-
-	@Autowired
 	UserRepository userRepo;
+	@Autowired
+	UserServiceImpl(UserRepository userRepo){
+		this.userRepo=userRepo;
+	}
 
 	@Override
 	public User getUserById(Long id) {

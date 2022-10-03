@@ -11,8 +11,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 @Service
 public class AuthorDetailService implements UserDetailsService {
-    @Autowired
+
     UserRepository userRepo;
+    @Autowired
+    public AuthorDetailService(UserRepository userRepo){
+        this.userRepo=userRepo;
+    }
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User author=userRepo.findByEmail(email).orElseThrow(()->new RuntimeException("user not found"));

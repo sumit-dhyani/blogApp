@@ -42,8 +42,6 @@ public class PostController {
     private final TagServiceImpl tagService;
     private final CommentServiceImpl commentService;
     private final UserServiceImpl userService;
-    @Autowired
-    PostRepository postRepository;
 
     @Autowired
     PostController(PostServiceImpl postService, TagServiceImpl tagService, CommentServiceImpl commentService, UserServiceImpl userService) {
@@ -114,8 +112,7 @@ public class PostController {
                 model.addAttribute("filter", tagQuery.toString());
                 paginatedPosts = postService.getPostsByTagIdSorted(start, limit, order, tagId);
             } else {
-                Pageable pagination = PageRequest.of(start / limit, limit);
-                paginatedPosts = postService.findAllByOrderByPublished(order, pagination);
+                paginatedPosts = postService.findAllByOrderByPublished(order, start, limit);
             }
         } else if (authorId != null | tagId != null) {
             StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
@@ -183,9 +180,8 @@ public class PostController {
             Pageable pageInfo = PageRequest.of(start / limit, limit);
             model.addAttribute("startDate", startDate);
             model.addAttribute("endDate", endDate);
-            paginatedPosts = postRepository
-                    .findAllPostsByPublishedAtBetween(startDate,
-                            LocalDate.parse(endDate).plusDays(1).toString(), pageInfo);
+            paginatedPosts=postService.getPostsByDatesBetweenOrdered(startDate,
+                    LocalDate.parse(endDate).plusDays(1).toString(),pageInfo);
         } else if (searchField != null) {
             Pageable pagination = PageRequest.of(start / limit, limit);
             paginatedPosts = postService.getSearchedPosts(searchField, pagination);
@@ -298,14 +294,14 @@ public class PostController {
     }
 
     @PostMapping("/publish")
-    public String publishPost(@ModelAttribute("blog") Post postToPublish) {
-        postService.publishUpdatedPost(postToPublish);
+    public String publishPost(@ModelAttribute("blog") Post postToPublish,Authentication authentication) {
+        postService.publishUpdatedPost(postToPublish,authentication);
         return "redirect:/draft?start=0";
     }
 
     @PostMapping("/publishnew")
-    public String publishNewPost(@ModelAttribute("blog") Post postToPublish) {
-        postService.publishPost(postToPublish);
+    public String publishNewPost(@ModelAttribute("blog") Post postToPublish,Authentication authentication) {
+        postService.publishPost(postToPublish,authentication);
         return "redirect:/";
     }
 }

@@ -7,9 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
@@ -18,13 +15,6 @@ import java.util.Set;
 public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByIsPublishedTrue(Pageable paging);
 
-    Page<Post> findAllByIsPublishedFalse(Pageable paging);
-
-    @Query(value = "select * from post where is_published=true order by published_at asc",nativeQuery = true)
-    Page<Post> findSortedPublishedPostAsc(Pageable paging);
-
-    @Query(value = "select * from post where is_published=true order by published_at desc",nativeQuery = true)
-    Page<Post> findSortedPublishedPostDesc(Pageable paging);
     @Query(value = "select p.* from post p join users u on p.user_id=u.id " +
             "where p.is_published=false and u.email=:email",nativeQuery = true)
     Page<Post> findPostsUnpublishedByUser(@Param("email") String email,Pageable paging);
@@ -67,40 +57,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findPostsByTagSorted(@Param("tagIds") List<Long> tagIds,Pageable paging);
 
     @Query(value = "select * from post where published_at between cast(:start AS timestamp) and cast(:end AS timestamp)" ,nativeQuery = true)
-    Page<Post> findAllPostsByPublishedAtBetween(@Param("start") String startDate,@Param("end") String endDate,Pageable paging);
-
-    @Query(value = "select * from post where published_at between cast(:start AS timestamp) and cast(:end AS timestamp)" ,nativeQuery = true)
     Page<Post> findAllPostsByPublishedAtBetweenOrdered(@Param("start") String startDate,@Param("end") String endDate, Pageable paging);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -4,14 +4,12 @@ import com.example.blog.blogapp.entity.User;
 import com.example.blog.blogapp.entity.UserAuthority;
 import com.example.blog.blogapp.model.UserModel;
 import com.example.blog.blogapp.repository.UserRepository;
-import com.example.blog.blogapp.serviceimpl.UserAuthorityService;
+import com.example.blog.blogapp.serviceimpl.UserAuthorityServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -32,7 +30,7 @@ public class UserController {
     private AuthenticationManager authManager;
 
     @Autowired
-    private UserAuthorityService authorityService;
+    private UserAuthorityServiceImpl authorityService;
 
     @GetMapping("/login")
     public String showLoginPage() {

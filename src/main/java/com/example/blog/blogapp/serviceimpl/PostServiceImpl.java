@@ -23,12 +23,16 @@ import com.example.blog.blogapp.service.PostService;
 
 @Service
 public class PostServiceImpl implements PostService {
-	@Autowired
 	PostRepository postRepo;
-	@Autowired
 	TagRepository tagRepo;
-	@Autowired
 	UserRepository userRepo;
+
+	@Autowired
+	public PostServiceImpl(PostRepository postRepo,TagRepository tagRepo,UserRepository userRepo){
+		this.postRepo=postRepo;
+		this.tagRepo=tagRepo;
+		this.userRepo=userRepo;
+	}
 
 	@Override
 	public List<Post> getBlogPosts() {
@@ -136,7 +140,11 @@ public class PostServiceImpl implements PostService {
 		return postRepo.findPostsUnpublishedByUser(authentication.getName(),pageRequest);
 	}
 
-	public void publishUpdatedPost(Post postToPublish) {
+	public void publishUpdatedPost(Post postToPublish,Authentication authentication) {
+		User user=userRepo.findByEmail(authentication.getName())
+				.orElseThrow(()->new RuntimeException("user not found"));
+		postToPublish.setAuthor(user.getName());
+		postToPublish.setUser(user);
 		postToPublish.setPublishedAt(LocalDateTime.now());
 		postToPublish.setIsPublished(true);
 		this.updatePost(postToPublish);
@@ -148,17 +156,23 @@ public class PostServiceImpl implements PostService {
 
 	}
 
-	public Page<Post> findAllByOrderByPublished(String order, Pageable pagination) {
+	public Page<Post> findAllByOrderByPublished(String order, Integer start,Integer limit) {
 		Page<Post> sortedPosts;
+		Pageable pagination;
 		if (order.equals("asc")) {
-			sortedPosts = postRepo.findSortedPublishedPostAsc(pagination);
+			pagination=PageRequest.of(start/limit,limit,Sort.by("publishedAt").ascending());
 		} else {
-			sortedPosts = postRepo.findSortedPublishedPostDesc(pagination);
+			pagination=PageRequest.of(start/limit,limit,Sort.by("publishedAt").descending());
 		}
+		sortedPosts = postRepo.findAllByIsPublishedTrue(pagination);
 		return sortedPosts;
 	}
 
-	public void publishPost(Post postToPublish) {
+	public void publishPost(Post postToPublish,Authentication authentication) {
+		User user=userRepo.findByEmail(authentication.getName())
+				.orElseThrow(()->new RuntimeException("user not found"));
+		postToPublish.setAuthor(user.getName());
+		postToPublish.setUser(user);
 		postToPublish.setCreatedAt(LocalDateTime.now());
 		postToPublish.setPublishedAt(LocalDateTime.now());
 		postToPublish.setIsPublished(true);

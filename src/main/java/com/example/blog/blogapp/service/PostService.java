@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.example.blog.blogapp.entity.Post;
-import com.example.blog.blogapp.entity.User;
 import org.springframework.security.core.Authentication;
 
 public interface PostService {

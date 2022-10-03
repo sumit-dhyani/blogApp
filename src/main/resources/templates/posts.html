@@ -12,7 +12,7 @@ display:flex;
 </head>
 <body>
 <nav>
-	<h1 th:text="${loggedIn}?'Welcome, '+${userName}:'Blog App'"></h1>
+	<a style="border: none" th:href="@{/}" ><h1 th:text="${loggedIn}?'Welcome, '+${userName}:'Blog App'"></h1></a>
 <a th:if="${loggedIn}" th:href="@{/draft?start=0}" th:text="Draft"></a>
 <form  action="/">
 	<input name="search" placeholder="Enter Keyword to Search" />
@@ -45,7 +45,18 @@ display:flex;
 		<a th:if="${startDate != null}" th:href="@{'/?sortField=publishedAt&order=desc&startDate='+${startDate}+'&endDate='+${endDate}}" th:text="Descending"></a>
 	<a th:if="${filter==null && startDate == null && search ==null}" th:href="@{/?sortField=publishedAt&order=desc}" th:text="Descending"></a>
 	</div>
-	<form  action="/">
+	<form class="date-form" action="/" >
+		<div STYLE="margin-bottom: 5px">
+			<p>Start Date:</p>
+			<input type="date" name="startDate" />
+			<p>End Date:</p>
+			<input type="date" name="endDate" />
+		</div>
+			<input class="date-btn" type="submit" th:value="'>'">
+
+	</form>
+	<div>
+	<form class="filter-form"  action="/">
 
 
 	<div>
@@ -57,12 +68,7 @@ display:flex;
 		</span>
 		</div>
 	</div>
-		<div STYLE="margin-bottom: 5px">
-			<p>Start Date:</p>
-			<input type="date" name="startDate" />
-			<p>End Date:</p>
-			<input type="date" name="endDate" />
-		</div>
+
 	<div class="tags">
 		<p>Tags:</p>
 		<div class="tag-list">
@@ -74,6 +80,7 @@ display:flex;
 		<input type="submit" class="filter-btn" value="Filter Results">
 	</div>
 	</form>
+	</div>
 </div>
 
 

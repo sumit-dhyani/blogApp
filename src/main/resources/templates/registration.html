@@ -2,16 +2,20 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link th:href="@{/css/login.css}" rel="stylesheet"/>
     <title>User Registration Page</title>
 </head>
 <body>
+<nav><h1>New User Registration</h1></nav>
+
   <div class="container" >
     <form  action="/registered" method="POST">
         Input Name: <input type="text" name="name" placeholder="Input name">
-        Input Email: <input type="text" name="email" placeholder="Input name">
-        Input Password: <input type="password" name="password" placeholder="Input name">
+        Input Email: <input type="text" name="email" placeholder="Input Email">
+        Input Password: <input type="password" name="password" placeholder="Input Password">
         <input type="submit" th:value="'Register'">
     </form>
   </div>
+<a class="home-btn" th:text="'<-- Go back to Home '" th:href="@{/}" ></a>
 </body>
 </html>

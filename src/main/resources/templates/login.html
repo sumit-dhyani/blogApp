@@ -15,6 +15,8 @@
     Input Password: <input type="password" name="password" placeholder="Input Password">
     <input type="submit" th:value="'Login'">
   </form>
+    <a th:href="@{/register}" th:text="'Don\'t have an account? Sign up'" ></a>
 </div>
+<a class="home-btn" th:text="'<-- Go back to Home '" th:href="@{/}" ></a>
 </body>
 </html>
