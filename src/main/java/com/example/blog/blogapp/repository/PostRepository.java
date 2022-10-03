@@ -30,7 +30,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findPostsUnpublishedByUser(@Param("email") String email,Pageable paging);
 
     @Query(value = "select distinct p.* from post p join post_tags q on "
-            + "p.id=q.post_id where q.tag_id=(select t.id from tag t where "
+            + "p.id=q.post_id where p.is_published= true and q.tag_id=(select t.id from tag t where "
             + "lower(t.name)=lower(:r)) or lower(p.title) LIKE lower(concat('%',:r,'%')) "
             + "or lower(p.content) Like lower(concat('%',:r,'%')) or lower(p.author) LIKE "
             + "lower(concat('%',:r,'%')) or lower(p.excerpt) LIKE lower(concat('%',:r,'%'))", nativeQuery = true)

@@ -35,12 +35,15 @@ display:flex;
 	
 	<div class="btn-sort">
 	<p>Sort by Publish Date:</p>
-	<a th:if="${filter == null && startDate == null}" th:href="@{/?sortField=publishedAt&order=asc}" th:text="Ascending"></a>
+		<a th:if="${filter == null && search != null}" th:href="@{'/?sortField=publishedAt&order=asc&search='+${search}}" th:text="Ascending"></a>
+		<a th:if="${filter == null && startDate == null && search ==null}" th:href="@{/?sortField=publishedAt&order=asc}" th:text="Ascending"></a>
 		<a th:if="${startDate != null}" th:href="@{'/?sortField=publishedAt&order=asc&startDate='+${startDate}+'&endDate='+${endDate}}" th:text="Ascending"></a>
 		<a th:if="${filter != null}" th:href="@{'/?sortField=publishedAt&order=asc'+${filter}}" th:text="Ascending"></a>
 		<a th:if="${filter!= null}" th:href="@{'/?sortField=publishedAt&order=desc'+${filter}}" th:text="Descending" ></a>
+
+		<a th:if="${filter == null && search != null}" th:href="@{'/?sortField=publishedAt&order=desc&search='+${search}}" th:text="Descending"></a>
 		<a th:if="${startDate != null}" th:href="@{'/?sortField=publishedAt&order=desc&startDate='+${startDate}+'&endDate='+${endDate}}" th:text="Descending"></a>
-	<a th:if="${filter==null && startDate == null}" th:href="@{/?sortField=publishedAt&order=desc}" th:text="Descending"></a>
+	<a th:if="${filter==null && startDate == null && search ==null}" th:href="@{/?sortField=publishedAt&order=desc}" th:text="Descending"></a>
 	</div>
 	<form  action="/">
 

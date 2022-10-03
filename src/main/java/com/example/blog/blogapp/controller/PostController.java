@@ -78,7 +78,13 @@ public class PostController {
         if (order != null) {
             StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
             StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
-            if (authorId != null && tagId != null) {
+            if(searchField!=null){
+                Pageable pagination=order.equals("asc")
+                        ?PageRequest.of(start/limit,limit,Sort.by("published_at").ascending())
+                        :PageRequest.of(start/limit,limit,Sort.by("published_at").descending());
+                paginatedPosts=postService.getSearchedPosts(searchField,pagination);
+            }
+            else if (authorId != null && tagId != null) {
                 getParameters(authorId, tagId, userQuery, tagQuery);
                 model.addAttribute("filter", userQuery.toString() + tagQuery);
                 Pageable pagination;

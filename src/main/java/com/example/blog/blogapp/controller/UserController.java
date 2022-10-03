@@ -1,8 +1,10 @@
 package com.example.blog.blogapp.controller;
 
 import com.example.blog.blogapp.entity.User;
+import com.example.blog.blogapp.entity.UserAuthority;
 import com.example.blog.blogapp.model.UserModel;
 import com.example.blog.blogapp.repository.UserRepository;
+import com.example.blog.blogapp.serviceimpl.UserAuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +30,9 @@ public class UserController {
     private UserRepository userRepo;
     @Autowired
     private AuthenticationManager authManager;
+
+    @Autowired
+    private UserAuthorityService authorityService;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -66,11 +71,12 @@ public class UserController {
 
     @PostMapping("/registered")
     public String registerUser(@ModelAttribute User author){
-        System.out.println(author);
         User authorDetails=new User();
         authorDetails.setName(author.getName());
         authorDetails.setEmail(author.getEmail());
         authorDetails.setPassword(bCrypt.encode(author.getPassword()));
+        UserAuthority authority=authorityService.findByAuthorityName("AUTHOR");
+        authorDetails.setUserAuthority(authority);
         userRepo.save(authorDetails);
         return "redirect:/";
     }
