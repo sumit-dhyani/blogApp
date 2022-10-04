@@ -2,6 +2,7 @@ package com.example.blog.blogapp.serviceimpl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,7 +82,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	private void addTags(Post newPost, Post postToUpdate) {
-		List<String> tagList = List.of(newPost.getTagField().split(","));
+		String[] tagList = newPost.getTagField().split(",");
 		for (String tag : tagList) {
 			Optional<Tag> existingTag = tagRepo.findByNameIgnoreCase(tag);
 			if (existingTag.isPresent()) {
