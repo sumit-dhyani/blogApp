@@ -43,9 +43,12 @@
 </form>
 
 <form th:if="${commentId==null}" th:action="@{/comment/add(id=${id})}" th:object="${newcomment}" method="POST">
-	Enter Name: <input required type="text" th:field="*{name}" />
-	Enter Email: <input required type="email" th:field="*{email}" />
-	Enter Comment: <textarea rows="6" cols="20" class="comment" type="text" th:field="*{comment}" />
+
+	<div th:if="${userDetails==null}">Enter Name: <input required type="text" th:field="*{name}" /></div>
+	<div th:if="${userDetails!=null}">Enter Name: <input required name="name" type="text" th:value="${userDetails.name}" disabled/></div>
+	<div th:if="${userDetails==null}">Enter Email: <input required type="email" th:field="*{email}" /></div>
+	<div th:if="${userDetails!=null}">Enter Email: <input required type="email" name="email" th:value="${userDetails.email}" disabled/></div>
+	<div>Enter Comment: <textarea rows="6" cols="20" class="comment" type="text" th:field="*{comment}" /></div>
 	<input type="submit" value="Add comment" />
 </form>
 <form th:if="${commentId!=null}" th:action="@{/comment/add(id=${id})}+'&commentId='+${commentId}" th:object="${newcomment}" method="POST">

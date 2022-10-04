@@ -8,7 +8,7 @@
 <body>
 <nav><h1>Login Page</h1></nav>
 <div class="container" >
-    <h1 th:if="${loginError!=null}" th:text="Error in username and password" />
+    <p style="text-align: center;color: red;" th:text="${notMatch}" th:if="${notMatch}"> </p>
   <form  action="/loginSubmit" method="POST">
 
     Input Username(email): <input type="text" name="email" placeholder="Input email">

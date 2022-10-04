@@ -45,11 +45,12 @@ public class CommentController {
 
 	@PostMapping("/add")
 	public String addComment(@ModelAttribute("newcomment") Comment comment, @RequestParam("id") long id,
-			@RequestParam(value = "commentId", required = false) String commentId) {
+			@RequestParam(value = "commentId", required = false) String commentId,
+							 Authentication authentication) {
 		if (commentId != null) {
 			commentService.updateComment(comment, Long.parseLong(commentId));
 		} else {
-			commentService.createComment(comment, id);
+			commentService.createComment(comment, id,authentication);
 		}
 		return "redirect:/view?id=" + id;
 	}

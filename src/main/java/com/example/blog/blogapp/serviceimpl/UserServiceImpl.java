@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User getUserById(Long id) {
-		return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+		return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found by id"+id));
 	}
 
 	public String getUserName(String email){

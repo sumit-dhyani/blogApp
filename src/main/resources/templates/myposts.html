@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+  <link th:href="@{/css/draft.css}" rel="stylesheet" />
+  <title >Blog Application</title>
+  <style type="text/css">
+    .flex{
+      display:flex;
+    }
+  </style>
+</head>
+<body>
+<nav><h1><a th:href="@{/}" >Blog App </a></h1>
+  <a th:href="@{/draft?start=0}" th:text="Draft"></a>
+</nav>
+
+<div class="container">
+<span >
+	<div class="posts" th:each="post: ${posts}">
+	<a class="post" th:href="@{/view(id=${post.id})}">
+		<h1 th:text="${post.title}"></h1>
+		<div class="flex">
+		<p th:text="${post.author}+', '">
+
+		<p th:text="${{post.createdAt}}">
+		</div>
+		<h4 th:text="${post.excerpt}"></h4>
+	</a>
+	</div>
+</span>
+</div>
+
+
+<footer th:if="${startIndex!=null}">
+  <a th:href="@{'/myPosts?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&limit='+${limit}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
+  <a class="next" th:href="@{'/myPosts?start='+${startIndex + limit}+'&limit='+${limit}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
+
+</footer>
+</body></html>

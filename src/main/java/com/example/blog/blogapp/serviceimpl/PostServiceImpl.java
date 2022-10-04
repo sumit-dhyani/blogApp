@@ -126,18 +126,9 @@ public class PostServiceImpl implements PostService {
 
 	}
 
-	public Page<Post> getSearchedPosts(String searchString, Pageable paging) {
-		return postRepo.findByMultipleFieldsIgnoreCaseIn(searchString, paging);
-	}
-
-	public List<Post> getSearchedPosts(String searchString) {
-
-		return postRepo.findByMultipleFieldsIgnoreCaseIn(searchString);
-	}
-
-	public Page<Post> getUnpublishedPost(int start,int limit,Authentication authentication) {
+	public Page<Post> getUnpublishedPost(boolean isTrue,int start,int limit,Authentication authentication) {
 		Pageable pageRequest = PageRequest.of(start / limit, limit);
-		return postRepo.findPostsUnpublishedByUser(authentication.getName(),pageRequest);
+		return postRepo.findPostsUnpublishedByUser(isTrue,authentication.getName(),pageRequest);
 	}
 
 	public void publishUpdatedPost(Post postToPublish,Authentication authentication) {
@@ -154,6 +145,11 @@ public class PostServiceImpl implements PostService {
 	public List<Post> getFilteredPostsByUserAndTag(String tagId, Long authorId) {
 		return postRepo.findPostIfUserHasThatTag(Long.parseLong(tagId), authorId);
 
+	}
+
+	@Override
+	public Page<Post> getPaginatedItems(List<Long> filteredPostIds, Pageable paging) {
+		return null;
 	}
 
 	public Page<Post> findAllByOrderByPublished(String order, Integer start,Integer limit) {
@@ -186,87 +182,6 @@ public class PostServiceImpl implements PostService {
 		postRepo.save(postToPublish);
 	}
 
-	public Page<Post> getPaginatedItems(List<Long> filteredPostIds,Pageable paging) {
-		return postRepo.getResultsById(filteredPostIds, paging);
-	}
-
-
-
-
-	public List<Post> getPostsBetweenStartAndEndDate(LocalDate startDate, OffsetDateTime endDate){
-		return postRepo.findAllByPublishedAtLessThanEqualAndPublishedAtGreaterThanEqual(endDate, OffsetDateTime.from(startDate));
-	}
-
-
-	public Set<Post> getPostsByTagId(String[] ids){
-		List<Long> tagIds = new ArrayList<>();
-		for(String id:ids){
-			tagIds.add(Long.valueOf(id));
-		}
-		return postRepo.finAllPostsByTag(tagIds);
-	}
-
-
-	public Set<Post> getPostsByUserAndTagId(String[] tIds,String[] uIds){
-		List<Long> tagIds=new ArrayList<>();
-		List<Long> userIds=new ArrayList<>();
-		for(String id:tIds){
-			tagIds.add(Long.valueOf(id));
-		}
-		for(String id:uIds){
-			userIds.add(Long.valueOf(id));
-		}
-		return postRepo.findPostsByUserAndTags(tagIds,userIds);
-	}
-
-	public Page<Post> getPostsByUserAndTagIdSorted(String[] tIds,String[] uIds,String order,Pageable pagination){
-		List<Long> tagIds=new ArrayList<>();
-		List<Long> userIds=new ArrayList<>();
-		for(String id:tIds){
-			tagIds.add(Long.valueOf(id));
-		}
-		for(String id:uIds){
-			userIds.add(Long.valueOf(id));
-		}
-		Set<Post> postsByUidAndTid=postRepo.findPostsByUserAndTags(tagIds,userIds);
-		List<Long> postId=new ArrayList<>();
-		for(Post p:postsByUidAndTid){
-			postId.add(p.getId());
-		}
-
-
-		return postRepo.getResultsById(postId,pagination);
-	}
-
-	public Page<Post> getPostsByAuthorSorted(Integer start, Integer limit, String order, String[] authorId) {
-		Pageable pagination;
-		if(order.equals("asc")){
-			pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").ascending());
-		}
-		else{
-			pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").descending());
-		}
-		List<Long> userIds=new ArrayList<>();
-		for(String uId:authorId){
-			userIds.add(Long.valueOf(uId));
-		}
-		return postRepo.findUsersWithIdSorted(userIds,pagination);
-	}
-
-	public Page<Post> getPostsByTagIdSorted(Integer start, Integer limit, String order, String[] tagId) {
-		Pageable pagination;
-		if(order.equals("asc")){
-			pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").ascending());
-		}
-		else{
-			pagination = PageRequest.of(start / limit, limit,Sort.by("published_at").descending());
-		}
-		List<Long> tagIds=new ArrayList<>();
-		for(String uId:tagId){
-			tagIds.add(Long.valueOf(uId));
-		}
-		return postRepo.findPostsByTagSorted(tagIds,pagination);
-	}
 
 	public Page<Post> getPostsByDatesBetweenOrdered(String startDate,String endDate,Pageable pagination){
 				return postRepo.findAllPostsByPublishedAtBetweenOrdered(startDate,endDate,pagination);

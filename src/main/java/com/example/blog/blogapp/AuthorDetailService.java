@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
+
 @Service
 public class AuthorDetailService implements UserDetailsService {
 
@@ -19,9 +21,9 @@ public class AuthorDetailService implements UserDetailsService {
     }
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User author=userRepo.findByEmail(email).orElseThrow(()->new RuntimeException("user not found"));
-        return new org.springframework.security.core.userdetails
-                .User(author.getEmail(),author.getPassword(),new ArrayList<>());
+        Optional<User> author=userRepo.findByEmail(email);
+        author.orElseThrow(()->new RuntimeException("user not found"));
+        return author.map(MyUserDetails::new).get();
     }
 
 }

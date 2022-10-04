@@ -2,9 +2,11 @@ package com.example.blog.blogapp.serviceimpl;
 
 import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
+import com.example.blog.blogapp.entity.User;
 import com.example.blog.blogapp.repository.CommentRepository;
 import com.example.blog.blogapp.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,14 +16,22 @@ public class CommentServiceImpl implements CommentService {
 
     private final PostServiceImpl postService;
     private final CommentRepository commentRepo;
+    private final UserServiceImpl userService;
 	@Autowired
-	public CommentServiceImpl(PostServiceImpl postService, CommentRepository commentRepo){
+	public CommentServiceImpl(PostServiceImpl postService, CommentRepository commentRepo,UserServiceImpl userService){
 		this.commentRepo=commentRepo;
 		this.postService =postService;
+        this.userService=userService;
 	}
     @Override
-    public void createComment(Comment comment, long id) {
+    public void createComment(Comment comment, long id, Authentication authentication) {
         Post existingPost = postService.returnBlog(id);
+        User user;
+        if(authentication!=null) {
+            user = userService.getUserByEmail(authentication.getName());
+            comment.setName(user.getName());
+            comment.setEmail(user.getEmail());
+        }
         comment.setCreatedAt(LocalDateTime.now());
         comment.setPost(existingPost);
         commentRepo.save(comment);

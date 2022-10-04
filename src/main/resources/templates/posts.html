@@ -14,6 +14,7 @@ display:flex;
 <nav>
 	<a style="border: none" th:href="@{/}" ><h1 th:text="${loggedIn}?'Welcome, '+${userName}:'Blog App'"></h1></a>
 <a th:if="${loggedIn}" th:href="@{/draft?start=0}" th:text="Draft"></a>
+	<a th:if="${loggedIn}" th:href="@{/myPosts?start=0}" th:text="'Published Posts'"></a>
 <form  action="/">
 	<input name="search" placeholder="Enter Keyword to Search" />
 	<span th:if="${filter!=null}" th:each="fil: ${authorIds}">
@@ -25,7 +26,7 @@ display:flex;
 	<input  type="submit" value="Search">
 </form>
 
-<a th:href="${loggedIn} ? '/create' :'/login'" th:text="'Add Post'"></a>
+<a th:href="${loggedIn} ? '/create' :'/register'" th:text="${loggedIn}?'Add Post':'Register'"></a>
 <a th:href="${loggedIn}? '/logout':'/login'" th:text="${loggedIn}?'Logout':'Login'"></a>
 
 </nav>

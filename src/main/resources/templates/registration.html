@@ -9,7 +9,9 @@
 <nav><h1>New User Registration</h1></nav>
 
   <div class="container" >
+
     <form  action="/registered" method="POST">
+        <p style="text-align: center;color: red;" th:text="${userExists}" th:if="${userExists}" />
         Input Name: <input type="text" name="name" placeholder="Input name">
         Input Email: <input type="text" name="email" placeholder="Input Email">
         Input Password: <input type="password" name="password" placeholder="Input Password">
