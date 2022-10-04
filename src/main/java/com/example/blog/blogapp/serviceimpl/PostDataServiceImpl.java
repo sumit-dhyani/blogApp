@@ -46,4 +46,9 @@ public class PostDataServiceImpl implements PostDataService {
         Specification<Post> spec=PostSpecification.getSearchSpecs(searchField);
         return postRepo.findAll(spec,pagination);
     }
+
+    public Page<Post> postsBetweenDates(String startDate,String endDate,Pageable pagination){
+        Specification<Post> spec=PostSpecification.getPostsBetweenDates(startDate,endDate);
+        return postRepo.findAll(spec,pagination);
+    }
 }

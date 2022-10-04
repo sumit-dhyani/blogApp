@@ -4,6 +4,7 @@ import com.example.blog.blogapp.entity.Tag;
 import com.example.blog.blogapp.entity.User;
 import org.springframework.data.jpa.domain.Specification;
 import javax.persistence.criteria.Join;
+import java.time.LocalDate;
 import java.util.List;
 
 public class PostSpecification {
@@ -55,8 +56,8 @@ public class PostSpecification {
     }
     private static Specification<Post> getPostsByTagIds(List<Long> tagIds) {
         return ((root, query, criteriaBuilder) -> {
-            Join<Post, Tag> authorPosts=root.join("tags");
-            return criteriaBuilder.in(authorPosts.get("id")).value(tagIds);
+            Join<Post, Tag> postTags=root.join("tags");
+            return criteriaBuilder.in(postTags.get("id")).value(tagIds);
         });
     }
     private static Specification<Post> getIsPublished(){
@@ -66,7 +67,8 @@ public class PostSpecification {
     }
     public static Specification<Post> getPostsBetweenDates(String startDate, String endDate) {
         return ((root, query, criteriaBuilder) -> {
-            return criteriaBuilder.between(root.get("publishedAt"),startDate,endDate);
+            return criteriaBuilder.between(root.get("publishedAt"),
+                    LocalDate.parse(startDate).atStartOfDay(),LocalDate.parse(endDate).atTime(23,59));
         });
     }
     private static Specification<Post> getSearchedPosts(String column,String searchField){

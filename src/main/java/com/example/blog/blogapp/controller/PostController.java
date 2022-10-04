@@ -39,6 +39,7 @@ public class PostController {
     private final CommentServiceImpl commentService;
     private final UserServiceImpl userService;
     private final PostDataServiceImpl postDataService;
+
     @Autowired
     PostRepository postrepo;
 
@@ -82,17 +83,16 @@ public class PostController {
             StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
             if (searchField != null) {
                 pagination = order.equals("asc")
-                        ? PageRequest.of(start / limit, limit, Sort.by("published_at").ascending())
-                        : PageRequest.of(start / limit, limit, Sort.by("published_at").descending());
+                        ? PageRequest.of(start / limit, limit, Sort.by("publishedAt").ascending())
+                        : PageRequest.of(start / limit, limit, Sort.by("publishedAt").descending());
                 paginatedPosts = postDataService.searchedPosts(searchField, pagination);
             } else if (startDate != null) {
                 if (order.equals("asc")) {
-                    pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").ascending());
+                    pagination = PageRequest.of(start / limit, limit, Sort.by("publishedAt").ascending());
                 } else {
-                    pagination = PageRequest.of(start / limit, limit, Sort.by("published_at").descending());
+                    pagination = PageRequest.of(start / limit, limit, Sort.by("publishedAt").descending());
                 }
-                paginatedPosts = postService.getPostsByDatesBetweenOrdered(startDate,
-                        LocalDate.parse(endDate).plusDays(1).toString(), pagination);
+                paginatedPosts = postDataService.postsBetweenDates(startDate,endDate,pagination);
             } else if (authorId != null | tagId != null) {
                 if (authorId != null && tagId != null) {
                     getParameters(authorId, tagId, userQuery, tagQuery);

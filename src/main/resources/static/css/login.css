@@ -21,6 +21,8 @@ nav{
     padding:2em 6em;
     background-color: grey;
     color: white;
+    display: flex;
+    align-items: center;
 }
 .container form{
     width: 100%;
@@ -34,4 +36,8 @@ nav{
     padding: 1em;
     font-size: 1.2em;
     border-radius: 2px;
+}
+nav a{
+    margin-left: auto;
+    color:white;
 }
