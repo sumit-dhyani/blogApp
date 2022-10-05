@@ -40,7 +40,7 @@ public class UserController {
     @GetMapping("/register")
     public String userRegistration(Model model){
         model.addAttribute("userForm",new User());
-        return "/registration.html";
+        return "registration.html";
     }
 
 
@@ -49,7 +49,7 @@ public class UserController {
         Optional<User> user=userRepo.findByEmail(author.getEmail());
         if(user.isPresent()){
             model.addAttribute("userExists","User with same email already Exists");
-            return "/registration.html";
+            return "registration.html";
         }
         User authorDetails=new User();
         authorDetails.setName(author.getName());
