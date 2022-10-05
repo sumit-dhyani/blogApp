@@ -6,6 +6,8 @@ import com.example.blog.blogapp.service.UserAuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserAuthorityServiceImpl implements UserAuthorityService {
 
@@ -15,6 +17,13 @@ public class UserAuthorityServiceImpl implements UserAuthorityService {
         this.authorRepo=authorRepo;
     }
     public UserAuthority findByAuthorityName(String name){
-       return authorRepo.findByAuthority(name);
+       Optional<UserAuthority> authority= authorRepo.findByAuthority(name);
+       if(authority.isPresent()){
+           return authority.get();
+       }
+       else{
+           return new UserAuthority("AUTHOR");
+       }
+
     }
 }

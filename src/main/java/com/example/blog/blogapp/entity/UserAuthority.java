@@ -19,4 +19,11 @@ public class UserAuthority {
     public void setAuthority(String authority) {
         this.authority = authority;
     }
+
+    public UserAuthority() {
+    }
+
+    public UserAuthority(String authority) {
+        this.authority = authority;
+    }
 }
