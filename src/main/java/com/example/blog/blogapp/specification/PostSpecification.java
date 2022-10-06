@@ -8,6 +8,18 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class PostSpecification {
+    public static Specification<Post> getFilteredPostsWithDate(List<Long> authorIds, List<Long> tagIds,
+                                                               String searchField,String startDate,String endDate){
+        if(startDate!=null && endDate !=null){
+            return getSpecs(authorIds,tagIds,searchField).and(getPostsBetweenDates(startDate,endDate));
+
+        }
+        else{
+            return getSpecs(authorIds,tagIds,searchField);
+        }
+
+    }
+
     public static Specification<Post> getSpecs(List<Long> authorIds, List<Long> tagIds, String searchField) {
         Specification<Post> specs=null;
         if(tagIds!=null &&authorIds!=null&&searchField!=null){
@@ -32,6 +44,9 @@ public class PostSpecification {
         else if(tagIds!=null){
             specs=getPostsByTagIds(tagIds);
 
+        }
+        else if(searchField!=null){
+            specs=getSearchSpecs(searchField);
         }
         return specs!=null?specs.and(getIsPublished()):specs;    }
 

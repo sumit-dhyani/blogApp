@@ -21,9 +21,10 @@ public class SecurityConfiguration {
                 antMatchers("/","/view","/register","/registered",
                         "/login","/loginSubmit","/comment/**").
                 permitAll().
-                antMatchers("/draft","/publish","/publishnew","/delete","/update")
+                antMatchers("/draft","/publish","/publishnew","/delete",
+                        "/update","/api/delete/","api/add","api/update")
                 .hasAnyAuthority("AUTHOR","ADMIN").
-                and().formLogin().permitAll().and().logout().permitAll().and().
+                and().formLogin().permitAll().and().logout().logoutSuccessUrl("/").permitAll().and().
                 exceptionHandling().accessDeniedPage("/error-404.html").and().
                 httpBasic(withDefaults());
         return http.build();

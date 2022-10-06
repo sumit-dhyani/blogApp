@@ -21,6 +21,25 @@ public class PostDataServiceImpl implements PostDataService {
 
     @Override
     public Page<Post> filteredPosts(String[] authorIds, String[] tagIds, String searchField,Pageable pagination) {
+        List<Long> auId =  convertStringToList(authorIds);
+        List<Long> tId=convertStringToList(tagIds);
+
+        Specification<Post> spec=PostSpecification.getSpecs(auId, tId, searchField);
+        return postRepo.findAll(spec,pagination);
+    }
+    public Page<Post> searchedPosts(String searchField, Pageable pagination){
+        Specification<Post> spec=PostSpecification.getSearchSpecs(searchField);
+        return postRepo.findAll(spec,pagination);
+    }
+
+    public Page<Post> postsBetweenDates(String startDate,String endDate,Pageable pagination){
+        Specification<Post> spec=PostSpecification.getPostsBetweenDates(startDate,endDate);
+        return postRepo.findAll(spec,pagination);
+    }
+
+
+    public Page<Post> getfilteredPosts(String[] authorIds, String[] tagIds,
+                                       String searchField,Pageable pagination,String startDate,String endDate){
         List<Long> auId = new ArrayList<>();
         if(authorIds!=null) {
             for (String s : authorIds) {
@@ -39,16 +58,21 @@ public class PostDataServiceImpl implements PostDataService {
         else{
             tId=null;
         }
-        Specification<Post> spec=PostSpecification.getSpecs(auId, tId, searchField);
+
+        Specification<Post> spec=PostSpecification.getFilteredPostsWithDate(auId,tId,searchField,startDate,endDate);
         return postRepo.findAll(spec,pagination);
     }
-    public Page<Post> searchedPosts(String searchField, Pageable pagination){
-        Specification<Post> spec=PostSpecification.getSearchSpecs(searchField);
-        return postRepo.findAll(spec,pagination);
+    private List<Long> convertStringToList(String[] authorIds){
+        List<Long> auId=new ArrayList<>();
+        if(authorIds!=null) {
+            for (String s : authorIds) {
+                auId.add(Long.parseLong(s));
+            }
+        }
+        else{
+            auId=null;
+        }
+       return auId;
     }
 
-    public Page<Post> postsBetweenDates(String startDate,String endDate,Pageable pagination){
-        Specification<Post> spec=PostSpecification.getPostsBetweenDates(startDate,endDate);
-        return postRepo.findAll(spec,pagination);
-    }
 }

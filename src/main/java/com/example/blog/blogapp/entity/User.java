@@ -19,7 +19,7 @@ public class User {
 	@JsonIgnore
 	private String password;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.PERSIST)
 	private UserAuthority userAuthority;
 
 	public UserAuthority getUserAuthority() {

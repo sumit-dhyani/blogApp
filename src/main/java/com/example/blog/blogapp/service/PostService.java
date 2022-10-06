@@ -9,7 +9,6 @@ import com.example.blog.blogapp.entity.Post;
 import org.springframework.security.core.Authentication;
 
 public interface PostService {
-	public List<Post> getBlogPosts();
 
 	public void createPost(Post newPost,Authentication authentication);
 
@@ -21,7 +20,4 @@ public interface PostService {
 
 	public Page<Post> paginatedPosts(Pageable pagination);
 
-	public List<Post> getFilteredPostsByUserAndTag(String tagId, Long authorId);
-
-	public Page<Post> getPaginatedItems(List<Long> filteredPostIds,Pageable paging);
 }

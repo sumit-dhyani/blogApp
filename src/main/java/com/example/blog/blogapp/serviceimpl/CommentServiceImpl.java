@@ -3,6 +3,7 @@ package com.example.blog.blogapp.serviceimpl;
 import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
 import com.example.blog.blogapp.entity.User;
+import com.example.blog.blogapp.exceptions.ResourceNotFoundException;
 import com.example.blog.blogapp.repository.CommentRepository;
 import com.example.blog.blogapp.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
 
     public String deleteComment(long id) {
         Comment comment = commentRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
         Long postId = comment.getPost().getId();
         commentRepo.deleteById(id);
         return postId.toString();

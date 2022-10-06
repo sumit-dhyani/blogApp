@@ -1,5 +1,7 @@
 package com.example.blog.blogapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ public class Post {
     private Long id;
     @Column(name = "title")
     private String title;
+
     @Column(name = "tag_field")
     private String tagField;
     private String excerpt;
@@ -40,6 +43,7 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Comment> comments = new TreeSet<>();
     @ManyToOne(cascade = CascadeType.PERSIST)
+    @JsonIgnore
     private User user;
 
     public String getTagField() {

@@ -41,9 +41,6 @@ public class PostController {
     private final PostDataServiceImpl postDataService;
 
     @Autowired
-    PostRepository postrepo;
-
-    @Autowired
     PostController(PostServiceImpl postService, TagServiceImpl tagService,
                    CommentServiceImpl commentService, UserServiceImpl userService, PostDataServiceImpl postDataService) {
         this.postService = postService;
@@ -144,12 +141,7 @@ public class PostController {
             }
             paginatedPosts = postDataService.filteredPosts(authorId, tagId, searchField, pagination);
         } else if (startDate != null && endDate != null) {
-            Pageable pageInfo = PageRequest.of(start / limit, limit);
-            model.addAttribute("startDate", startDate);
-            model.addAttribute("endDate", endDate);
-            paginatedPosts = postService.getPostsByDatesBetweenOrdered(startDate, endDate, pageInfo);
-            model.addAttribute("startIndex", start);
-            model.addAttribute(LIMIT_PARAM, limit);
+            paginatedPosts = postDataService.postsBetweenDates(startDate,endDate,pagination);
         } else if (searchField != null) {
             paginatedPosts = postDataService.searchedPosts(searchField, pagination);
         } else {

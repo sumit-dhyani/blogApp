@@ -1,4 +1,6 @@
 package com.example.blog.blogapp.entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,7 +20,7 @@ public class Comment {
 	private String email;
 	private String comment;
 	private LocalDateTime createdAt;
-	
+	@JsonBackReference
 	@ManyToOne
 	private Post post;
 	

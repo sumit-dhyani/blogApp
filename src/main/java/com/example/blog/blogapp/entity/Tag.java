@@ -1,5 +1,7 @@
 package com.example.blog.blogapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +22,7 @@ public class Tag {
 	private String name;
 	@Column(name="created_at")
 	private LocalDateTime createdAt;
+	@JsonBackReference
 	@ManyToMany(mappedBy = "tags",cascade= CascadeType.ALL)	
 	private List<Post> postTag=new ArrayList<>();
 	public long getId() {

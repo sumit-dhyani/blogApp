@@ -36,12 +36,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<Post> getBlogPosts() {
-		System.out.println(postRepo.findAll());
-		return postRepo.findAll(Sort.by(Sort.Direction.DESC, "id"));
-	}
-
-	@Override
 	public void createPost(Post newPost,Authentication authentication) {
 		User user=userRepo.findByEmail(authentication.getName())
 				.orElseThrow(()->new RuntimeException("user not found"));
@@ -65,10 +59,10 @@ public class PostServiceImpl implements PostService {
 		postToUpdate.setTitle(newPost.getTitle());
 		postToUpdate.setUpdatedAt(LocalDateTime.now());
 		postToUpdate.setTags(new ArrayList<>());
-		if (newPost.getIsPublished()) {
+		if (postToUpdate.getIsPublished()) {
 			postToUpdate.setIsPublished(true);
 		}
-		postToUpdate.setPublishedAt(newPost.getPublishedAt());
+		postToUpdate.setPublishedAt(postToUpdate.getPublishedAt());
 		addTags(newPost, postToUpdate);
 
 		if (newPost.getContent().length() > 100) {
@@ -142,16 +136,6 @@ public class PostServiceImpl implements PostService {
 		this.updatePost(postToPublish);
 	}
 
-	@Override
-	public List<Post> getFilteredPostsByUserAndTag(String tagId, Long authorId) {
-		return postRepo.findPostIfUserHasThatTag(Long.parseLong(tagId), authorId);
-
-	}
-
-	@Override
-	public Page<Post> getPaginatedItems(List<Long> filteredPostIds, Pageable paging) {
-		return null;
-	}
 
 	public Page<Post> findAllByOrderByPublished(String order, Integer start,Integer limit) {
 		Page<Post> sortedPosts;
@@ -181,10 +165,5 @@ public class PostServiceImpl implements PostService {
 		addTags(postToPublish, postToPublish);
 
 		postRepo.save(postToPublish);
-	}
-
-
-	public Page<Post> getPostsByDatesBetweenOrdered(String startDate,String endDate,Pageable pagination){
-				return postRepo.findAllPostsByPublishedAtBetweenOrdered(startDate,endDate,pagination);
 	}
 }
