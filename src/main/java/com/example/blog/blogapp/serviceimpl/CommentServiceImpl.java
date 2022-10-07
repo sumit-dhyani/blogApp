@@ -41,8 +41,10 @@ public class CommentServiceImpl implements CommentService {
     public void updateComment(Comment updatedComment, long id) {
         Comment comment = returnComment(id);
         comment.setComment(updatedComment.getComment());
-        comment.setName(updatedComment.getName());
-        comment.setEmail(updatedComment.getEmail());
+        if(!comment.getName().equals(updatedComment.getName())) {
+            comment.setName(updatedComment.getName());
+            comment.setEmail(updatedComment.getEmail());
+        }
         commentRepo.save(comment);
     }
 
@@ -55,6 +57,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     public Comment returnComment(long id) {
-        return commentRepo.findById(id).orElseThrow(() -> new RuntimeException("Comment Not Found"));
+        return commentRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Comment Not Found "));
     }
 }

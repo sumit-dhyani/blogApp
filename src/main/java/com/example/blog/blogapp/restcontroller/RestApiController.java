@@ -107,4 +107,17 @@ public class RestApiController {
         restService.deleteById(id,authentication);
         return new ResponseEntity<>("Post Deleted",HttpStatus.OK);
     }
+
+    @GetMapping("/draft")
+    public ResponseEntity<Page<Post>> getAllPosts(@RequestParam(value = START, required = false,defaultValue = START_INDEX) Integer start,
+                                                  @RequestParam(value = LIMIT_PARAM, required = false,defaultValue = LIMIT) Integer limit,
+                                                  @RequestParam(value = ORDER,required = false) String order){
+        Pageable pagination= order!=null
+                ?order.equals("asc")
+                ?PageRequest.of(start/limit,limit, Sort.by("publishedAt").ascending())
+                :PageRequest.of(start/limit,limit, Sort.by("publishedAt").descending())
+                :PageRequest.of(start/limit,limit);
+        Page<Post> postList=postDataService.findUnPublishedPosts(pagination);
+        return new ResponseEntity<>(postList,HttpStatus.OK);
+    }
 }

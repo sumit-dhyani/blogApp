@@ -1,5 +1,6 @@
 package com.example.blog.blogapp.serviceimpl;
 
+import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.Post;
 import com.example.blog.blogapp.entity.Tag;
 import com.example.blog.blogapp.entity.User;
@@ -51,15 +52,17 @@ public class RestServiceImpl {
 
     }
     public void deleteComment(long id, Authentication authentication){
-        String userEmail=authentication.getName();
-        String authorEmail=commentService.returnComment(id).getPost().getUser().getEmail();
-        if (userEmail.equals(authorEmail)|
-                authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
-            commentService.deleteComment(id);
+        if(authentication!=null) {
+            String userEmail = authentication.getName();
+            String authorEmail = commentService.returnComment(id).getPost().getUser().getEmail();
+            if (userEmail.equals(authorEmail) |
+                    authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
+                String post_id = commentService.deleteComment(id);
+            } else {
+                throw new UnauthorizedException("Not Authorized");
+            }
         }
-        else{
-            throw new UnauthorizedException("Not Authorized");
-        }
+        else throw new UnauthorizedException("Please login first");
     }
     private void addTags(Post newPost, Post postToUpdate) {
         String[] tagList = newPost.getTagField().split(",");
@@ -83,6 +86,18 @@ public class RestServiceImpl {
         }
         else{
             throw new UnauthorizedException("You are not authorized to delete this post");
+        }
+    }
+
+    public void updateComment(long id, Comment comment, Authentication authentication) {
+        Comment existing=commentService.returnComment(id);
+        if(authentication.getName().equals(existing.getPost().getUser().getEmail())|
+                authentication.getAuthorities().equals(new SimpleGrantedAuthority("AUTHOR"))){
+
+            commentService.updateComment(comment,id);
+        }
+        else{
+            throw new UnauthorizedException("You are not authorized to update this post");
         }
     }
 }

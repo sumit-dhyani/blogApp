@@ -75,4 +75,9 @@ public class PostDataServiceImpl implements PostDataService {
        return auId;
     }
 
+    public Page<Post> findUnPublishedPosts(Pageable pagination){
+        Specification<Post> specforUnPublished=PostSpecification.getUnPublishedPosts();
+        return postRepo.findAll(specforUnPublished,pagination);
+    }
+
 }

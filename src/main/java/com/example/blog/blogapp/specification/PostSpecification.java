@@ -19,7 +19,11 @@ public class PostSpecification {
         }
 
     }
-
+    public static Specification<Post> getUnPublishedPosts(){
+         return((root, query, criteriaBuilder) -> {
+            return criteriaBuilder.isFalse(root.get("isPublished"));
+        });
+    }
     public static Specification<Post> getSpecs(List<Long> authorIds, List<Long> tagIds, String searchField) {
         Specification<Post> specs=null;
         if(tagIds!=null &&authorIds!=null&&searchField!=null){

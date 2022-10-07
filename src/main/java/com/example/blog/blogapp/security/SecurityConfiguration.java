@@ -22,7 +22,7 @@ public class SecurityConfiguration {
                         "/login","/loginSubmit","/comment/**").
                 permitAll().
                 antMatchers("/draft","/publish","/publishnew","/delete",
-                        "/update","/api/delete/","api/add","api/update")
+                        "/update","/api/delete/","/api/add","/api/update","/api/comment/**")
                 .hasAnyAuthority("AUTHOR","ADMIN").
                 and().formLogin().permitAll().and().logout().logoutSuccessUrl("/").permitAll().and().
                 exceptionHandling().accessDeniedPage("/error-404.html").and().

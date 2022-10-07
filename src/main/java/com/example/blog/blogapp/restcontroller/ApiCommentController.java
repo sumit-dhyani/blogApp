@@ -2,6 +2,7 @@ package com.example.blog.blogapp.restcontroller;
 
 import com.example.blog.blogapp.entity.Comment;
 import com.example.blog.blogapp.entity.User;
+import com.example.blog.blogapp.model.ResponseMsg;
 import com.example.blog.blogapp.repository.UserRepository;
 import com.example.blog.blogapp.serviceimpl.CommentServiceImpl;
 import com.example.blog.blogapp.serviceimpl.RestServiceImpl;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("api/comment")
@@ -37,9 +40,15 @@ public class ApiCommentController {
         return new ResponseEntity<>(comment,HttpStatus.CREATED);
     }
 
-    @PostMapping("delete/{id}")
-    public ResponseEntity<String> deleteComment(@PathVariable("id") long id, Authentication authentication){
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<ResponseMsg> deleteComment(@PathVariable("id") long id, Authentication authentication){
         restService.deleteComment(id,authentication);
-        return new ResponseEntity<>("Comment Deleted",HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMsg(LocalDateTime.now(),"Deleted","Comment deleted Successfully"),HttpStatus.OK);
+    }
+
+    @PutMapping("update/{id}")
+    public ResponseEntity<Comment> updateComment(@PathVariable("id") long id,@RequestBody Comment comment, Authentication authentication){
+        restService.updateComment(id,comment,authentication);
+        return new ResponseEntity<>(commentService.returnComment(id),HttpStatus.OK);
     }
 }
