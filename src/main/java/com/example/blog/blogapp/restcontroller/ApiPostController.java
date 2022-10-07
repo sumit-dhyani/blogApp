@@ -1,8 +1,6 @@
 package com.example.blog.blogapp.restcontroller;
 import com.example.blog.blogapp.entity.Post;
-import com.example.blog.blogapp.exceptions.ResourceNotFoundException;
 import com.example.blog.blogapp.exceptions.UnauthorizedException;
-import com.example.blog.blogapp.repository.PostRepository;
 import com.example.blog.blogapp.serviceimpl.PostDataServiceImpl;
 import com.example.blog.blogapp.serviceimpl.PostServiceImpl;
 import com.example.blog.blogapp.serviceimpl.RestServiceImpl;
@@ -17,11 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api")
-public class RestApiController {
+public class ApiPostController {
     public static final String LIMIT = "20";
     public static final String START_INDEX = "0";
     public static final String START = "start";
@@ -34,13 +30,10 @@ public class RestApiController {
     public static final String END_DATE = "endDate";
 
     private final PostServiceImpl postService;
-    PostRepository postRepo;
-
     private PostDataServiceImpl postDataService;
     RestServiceImpl restService;
     @Autowired
-    public RestApiController(PostRepository postRepo, PostServiceImpl postService, RestServiceImpl restService,PostDataServiceImpl postDataService){
-        this.postRepo=postRepo;
+    public ApiPostController(PostServiceImpl postService, RestServiceImpl restService, PostDataServiceImpl postDataService){
         this.postService=postService;
         this.restService=restService;
         this.postDataService=postDataService;
@@ -75,12 +68,9 @@ public class RestApiController {
         return new ResponseEntity<>(postDataService.findPublishedPosts(pagination),HttpStatus.OK);
     }
     @GetMapping("{id}")
-    public Post getPostById(@PathVariable("id") long id){
-        Optional<Post> postFound=postRepo.findById(id);
-        if(!postFound.isPresent()){
-            throw new ResourceNotFoundException("User not found");
-        }
-        return postFound.get();
+    public ResponseEntity<Post> getPostById(@PathVariable("id") long id){
+        Post post=postService.returnBlog(id);
+        return new ResponseEntity<>(post,HttpStatus.OK);
     }
 
     @PostMapping("/add")

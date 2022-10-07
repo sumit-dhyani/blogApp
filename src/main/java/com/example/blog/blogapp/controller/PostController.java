@@ -80,7 +80,7 @@ public class PostController {
             model.addAttribute("loggedIn", true);
             model.addAttribute("userName", userService.getUserName(authentication.getName()));
         }
-            if (authorId != null | tagId != null) {
+        if (authorId != null | tagId != null) {
             StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
             StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
                 if (tagId != null && authorId != null && searchField != null) {

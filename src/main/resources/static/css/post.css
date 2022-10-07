@@ -100,7 +100,7 @@ nav a{
 	text-decoration:underline;
 }
 .container{
-	width:90%;
+	max-width: 1550px;
 	display:flex;
 	margin:0 auto;
 	margin-top:2em;
@@ -117,15 +117,15 @@ span{
 	width:100%;
 }
 .posts{
-	border:2px solid grey;
-	display:flex;
-	margin:0 auto;
-	max-width:550px;
-	width:100%;
-	border-radius:4px;
-	max-height:45%;
-	height:100%;
-	box-shadow:4px 4px  grey;
+	border: 2px solid grey;
+	display: flex;
+	margin: 0 auto;
+	max-width: 550px;
+	width: 100%;
+	border-radius: 4px;
+	max-height: 23vh;
+	height: 100%;
+	box-shadow: 4px 4px grey;
 }
 .post{
 	  
@@ -136,14 +136,14 @@ span{
 	gap:1em;
 }
 footer{
+	max-width: 1550px;
 	display:flex;
-	position:absolute;
-	bottom:7em;
-	left:22em;
-	right:7em;
+	justify-content: space-between;
+	margin: 2em auto;
 }
 
 footer a{
+
 	padding:.8em;
 	font-size:1.5em;
 	border:2px solid black;

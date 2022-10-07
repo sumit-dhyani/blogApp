@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.example.blog.blogapp.entity.User;
+import com.example.blog.blogapp.exceptions.ResourceNotFoundException;
 import com.example.blog.blogapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -98,9 +99,8 @@ public class PostServiceImpl implements PostService {
 
 	}
 
-//	
 	public Post returnBlog(Long id) {
-		return postRepo.findById(id).orElseThrow(() -> new RuntimeException("Blog not present"));
+		return postRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Blog not present"));
 	}
 
 	public Post returnBlog(Long id, Authentication authentication){
