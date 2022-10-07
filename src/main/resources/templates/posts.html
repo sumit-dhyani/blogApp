@@ -102,14 +102,19 @@ display:flex;
 </div>
 
 
-<footer th:if="${startIndex!=null}"> 
+<footer th:if="${startIndex!=null && order==null && filter==null && startDate==null}">
 <a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&limit='+${limit}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
 <a class="next" th:href="@{'/?start='+${startIndex + limit}+'&limit='+${limit}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 </footer>
 
-<footer th:if="${startDate!=null && endDate!=null}" >
+<footer th:if="${startDate!=null && endDate!=null &&order==null}" >
 	<a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&limit='+${limit}+'&startDate='+${startDate}+'&endDate='+${endDate}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
 	<a class="next" th:href="@{'/?start='+${startIndex + limit}+'&limit='+${limit}+'&startDate='+${startDate}+'&endDate='+${endDate}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
+
+</footer>
+<footer th:if="${startDate!=null && endDate!=null && order!=null}" >
+	<a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&limit='+${limit}+'&startDate='+${startDate}+'&endDate='+${endDate}+'&sortField=publishedAt&order='+${order}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
+	<a class="next" th:href="@{'/?start='+${startIndex + limit}+'&limit='+${limit}+'&startDate='+${startDate}+'&endDate='+${endDate}+'&sortField=publishedAt&order='+${order}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 
 </footer>
 <footer th:if="${filter!=null && order==null && search==null}">
@@ -122,7 +127,7 @@ display:flex;
 <a class="next" th:href="@{'/?start='+${startIndex + limit}+'&sortField=publishedAt&order='+${order}+${filter}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 </footer>
 
-<footer th:if="${order!=null && filter==null}">
+<footer th:if="${order!=null && filter==null && startDate==null}">
 	<a th:href="@{'/?start='+${startIndex - limit < 0 ? 0 : startIndex - limit}+'&sortField=publishedAt&order='+${order}}" th:text="'Previous'" th:if="${startIndex > 0}"></a>
 	<a class="next" th:href="@{'/?start='+${startIndex + limit}+'&sortField=publishedAt&order='+${order}}" th:text="'Next'" th:if="${startIndex+limit <= totalElements-1}"></a>
 </footer>

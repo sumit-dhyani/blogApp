@@ -2,8 +2,6 @@ package com.example.blog.blogapp.serviceimpl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import com.example.blog.blogapp.entity.User;
@@ -12,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -59,10 +56,10 @@ public class PostServiceImpl implements PostService {
 		postToUpdate.setTitle(newPost.getTitle());
 		postToUpdate.setUpdatedAt(LocalDateTime.now());
 		postToUpdate.setTags(new ArrayList<>());
-		if (postToUpdate.getIsPublished()) {
+		if (postToUpdate.getIsPublished()| newPost.getIsPublished()) {
 			postToUpdate.setIsPublished(true);
 		}
-		postToUpdate.setPublishedAt(postToUpdate.getPublishedAt());
+		postToUpdate.setPublishedAt(postToUpdate.getPublishedAt()!=null?postToUpdate.getPublishedAt():LocalDateTime.now());
 		addTags(newPost, postToUpdate);
 
 		if (newPost.getContent().length() > 100) {
@@ -136,18 +133,6 @@ public class PostServiceImpl implements PostService {
 		this.updatePost(postToPublish);
 	}
 
-
-	public Page<Post> findAllByOrderByPublished(String order, Integer start,Integer limit) {
-		Page<Post> sortedPosts;
-		Pageable pagination;
-		if (order.equals("asc")) {
-			pagination=PageRequest.of(start/limit,limit,Sort.by("publishedAt").ascending());
-		} else {
-			pagination=PageRequest.of(start/limit,limit,Sort.by("publishedAt").descending());
-		}
-		sortedPosts = postRepo.findAllByIsPublishedTrue(pagination);
-		return sortedPosts;
-	}
 
 	public void publishPost(Post postToPublish,Authentication authentication) {
 		User user=userRepo.findByEmail(authentication.getName())

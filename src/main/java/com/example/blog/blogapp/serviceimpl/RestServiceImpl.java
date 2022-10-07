@@ -34,13 +34,12 @@ public class RestServiceImpl {
     }
 
     public Post createPost(Post newPost, Authentication authentication) {
-
         User user=userRepo.findByEmail(authentication.getName())
                 .orElseThrow(()->new RuntimeException("user not found"));
         newPost.setAuthor(user.getName());
         newPost.setCreatedAt(LocalDateTime.now());
-        newPost.setIsPublished(true);
-        newPost.setPublishedAt(LocalDateTime.now());
+        if(newPost.getIsPublished()){
+        newPost.setPublishedAt(LocalDateTime.now());}
         if (newPost.getContent().length() > 100) {
             newPost.setExcerpt(newPost.getContent().substring(0, 100));
         } else {

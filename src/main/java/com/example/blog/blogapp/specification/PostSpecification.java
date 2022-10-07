@@ -79,7 +79,7 @@ public class PostSpecification {
             return criteriaBuilder.in(postTags.get("id")).value(tagIds);
         });
     }
-    private static Specification<Post> getIsPublished(){
+    public static Specification<Post> getIsPublished(){
         return((root, query, criteriaBuilder) -> {
             return criteriaBuilder.isTrue(root.get("isPublished"));
         });

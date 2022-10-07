@@ -32,6 +32,7 @@ public class PostDataServiceImpl implements PostDataService {
         return postRepo.findAll(spec,pagination);
     }
 
+
     public Page<Post> postsBetweenDates(String startDate,String endDate,Pageable pagination){
         Specification<Post> spec=PostSpecification.getPostsBetweenDates(startDate,endDate);
         return postRepo.findAll(spec,pagination);
@@ -40,24 +41,8 @@ public class PostDataServiceImpl implements PostDataService {
 
     public Page<Post> getfilteredPosts(String[] authorIds, String[] tagIds,
                                        String searchField,Pageable pagination,String startDate,String endDate){
-        List<Long> auId = new ArrayList<>();
-        if(authorIds!=null) {
-            for (String s : authorIds) {
-                auId.add(Long.parseLong(s));
-            }
-        }
-        else{
-            auId=null;
-        }
-        List<Long> tId=new ArrayList<>();
-        if(tagIds!=null) {
-            for (String s : tagIds) {
-                tId.add(Long.parseLong(s));
-            }
-        }
-        else{
-            tId=null;
-        }
+        List<Long> auId = convertStringToList(authorIds);
+        List<Long> tId= convertStringToList(tagIds);
 
         Specification<Post> spec=PostSpecification.getFilteredPostsWithDate(auId,tId,searchField,startDate,endDate);
         return postRepo.findAll(spec,pagination);
@@ -75,9 +60,13 @@ public class PostDataServiceImpl implements PostDataService {
        return auId;
     }
 
+    public Page<Post> findPublishedPosts(Pageable pagination){
+        Specification<Post> specForPublished=PostSpecification.getIsPublished();
+        return postRepo.findAll(specForPublished,pagination);
+    }
     public Page<Post> findUnPublishedPosts(Pageable pagination){
-        Specification<Post> specforUnPublished=PostSpecification.getUnPublishedPosts();
-        return postRepo.findAll(specforUnPublished,pagination);
+        Specification<Post> specForUnPublished=PostSpecification.getUnPublishedPosts();
+        return postRepo.findAll(specForUnPublished,pagination);
     }
 
 }

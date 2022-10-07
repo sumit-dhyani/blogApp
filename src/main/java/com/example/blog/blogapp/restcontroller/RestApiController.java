@@ -72,7 +72,7 @@ public class RestApiController {
             postList=postDataService.filteredPosts(authorId,tagId,searchField,pagination);
             return new ResponseEntity<>(postList,HttpStatus.OK);
         }
-        return new ResponseEntity<>(postRepo.findAll(pagination),HttpStatus.OK);
+        return new ResponseEntity<>(postDataService.findPublishedPosts(pagination),HttpStatus.OK);
     }
     @GetMapping("{id}")
     public Post getPostById(@PathVariable("id") long id){

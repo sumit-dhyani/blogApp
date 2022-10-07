@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -42,14 +44,13 @@ public class PostController {
 
     @Autowired
     PostController(PostServiceImpl postService, TagServiceImpl tagService,
-                   CommentServiceImpl commentService, UserServiceImpl userService, PostDataServiceImpl postDataService) {
+                   CommentServiceImpl commentService, UserServiceImpl userService, PostDataServiceImpl postDataService){
         this.postService = postService;
         this.tagService = tagService;
         this.commentService = commentService;
         this.userService = userService;
         this.postDataService = postDataService;
     }
-
     @GetMapping
     public String getHomePage(Model model,
                               Authentication authentication,
@@ -70,77 +71,49 @@ public class PostController {
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
         Page<Post> paginatedPosts;
-        Pageable pagination = PageRequest.of(start / limit, limit);
+        Pageable pagination = order!=null
+                ?order.equals("asc")
+                ?PageRequest.of(start/limit,limit, Sort.by("publishedAt").ascending())
+                :PageRequest.of(start/limit,limit, Sort.by("publishedAt").descending())
+                :PageRequest.of(start/limit,limit);
         if (authentication != null) {
             model.addAttribute("loggedIn", true);
             model.addAttribute("userName", userService.getUserName(authentication.getName()));
         }
-        if (order != null) {
+            if (authorId != null | tagId != null) {
             StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
             StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
-            if (searchField != null) {
-                pagination = order.equals("asc")
-                        ? PageRequest.of(start / limit, limit, Sort.by("publishedAt").ascending())
-                        : PageRequest.of(start / limit, limit, Sort.by("publishedAt").descending());
-                paginatedPosts = postDataService.searchedPosts(searchField, pagination);
-            } else if (startDate != null) {
-                if (order.equals("asc")) {
-                    pagination = PageRequest.of(start / limit, limit, Sort.by("publishedAt").ascending());
-                } else {
-                    pagination = PageRequest.of(start / limit, limit, Sort.by("publishedAt").descending());
-                }
-                paginatedPosts = postDataService.postsBetweenDates(startDate,endDate,pagination);
-            } else if (authorId != null | tagId != null) {
-                if (authorId != null && tagId != null) {
+                if (tagId != null && authorId != null && searchField != null) {
+                    getParameters(authorId, tagId, userQuery, tagQuery);
+                    model.addAttribute("filter", userQuery.toString()
+                            + tagQuery + "&search=" + searchField);
+                } else if (tagId != null && authorId != null) {
                     getParameters(authorId, tagId, userQuery, tagQuery);
                     model.addAttribute("filter", userQuery.toString() + tagQuery);
-                } else if (authorId != null) {
-                    getParameters(authorId, userQuery);
-                    model.addAttribute("filter", userQuery.toString());
+                } else if (tagId != null && searchField != null) {
+                    getParameters(tagId, tagQuery);
+                    model.addAttribute("filter", tagQuery + "&search" + searchField);
                 } else if (tagId != null) {
                     getParameters(tagId, tagQuery);
-                    model.addAttribute("filter", tagQuery.toString());
-                }
-                if (order.equals("asc")) {
-                    pagination = PageRequest.of(start / limit, limit, Sort.by("publishedAt").ascending());
-                } else {
-                    pagination = PageRequest.of(start / limit, limit, Sort.by("publishedAt").descending());
-                }
-                paginatedPosts = postDataService.filteredPosts(authorId, tagId, "", pagination);
-            } else {
-                paginatedPosts = postService.findAllByOrderByPublished(order, start, limit);
-            }
-        } else if (authorId != null | tagId != null) {
-            StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
-            StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
-            if (tagId != null && authorId != null && searchField != null) {
-                getParameters(authorId, tagId, userQuery, tagQuery);
-                model.addAttribute("filter", userQuery.toString()
-                        + tagQuery + "&search=" + searchField);
-            } else if (tagId != null && authorId != null) {
-                getParameters(authorId, tagId, userQuery, tagQuery);
-                model.addAttribute("filter", userQuery.toString() + tagQuery);
-            } else if (tagId != null && searchField != null) {
-                getParameters(tagId, tagQuery);
-                model.addAttribute("filter", tagQuery + "&search" + searchField);
-            } else if (tagId != null) {
-                getParameters(tagId, tagQuery);
-                model.addAttribute("filter", tagQuery);
-            } else if (authorId != null && searchField != null) {
-                for (String id : authorId) {
-                    userQuery.add(id);
-                }
-                model.addAttribute("filter", userQuery + "&search" + searchField);
-            } else {
-                if (authorId != null) {
+                    model.addAttribute("filter", tagQuery);
+                } else if (authorId != null && searchField != null) {
                     for (String id : authorId) {
                         userQuery.add(id);
                     }
+                    model.addAttribute("filter", userQuery + "&search" + searchField);
+                } else {
+                    if (authorId != null) {
+                        for (String id : authorId) {
+                            userQuery.add(id);
+                        }
+                    }
+                    model.addAttribute("filter", userQuery.toString());
                 }
-                model.addAttribute("filter", userQuery.toString());
-            }
             paginatedPosts = postDataService.filteredPosts(authorId, tagId, searchField, pagination);
         } else if (startDate != null && endDate != null) {
+            StringJoiner userQuery = new StringJoiner("&authorId=", "&authorId=", "");
+            StringJoiner tagQuery = new StringJoiner("&tagId=", "&tagId=", "");
+            getParameters(authorId, tagId, userQuery, tagQuery);
             paginatedPosts = postDataService.postsBetweenDates(startDate,endDate,pagination);
         } else if (searchField != null) {
             paginatedPosts = postDataService.searchedPosts(searchField, pagination);
